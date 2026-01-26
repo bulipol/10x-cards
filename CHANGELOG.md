@@ -4,6 +4,30 @@ Wszystkie istotne zmiany w projekcie 10x-cards będą dokumentowane w tym pliku.
 
 Format oparty na [Keep a Changelog](https://keepachangelog.com/pl/1.1.0/).
 
+## [0.2.0] - 2026-01-26
+
+### Dodane
+- **Plany implementacji API** (.ai/):
+  - Plan implementacji endpointów autentykacji (`auth-endpoint-implementation-plan.md`)
+    - 6 endpointów: register, login, logout, reset-password, update-password, DELETE account
+    - Integracja @supabase/ssr dla SSR
+    - Middleware z zarządzaniem sesją
+    - Schematy walidacji Zod
+  - Plan implementacji logów błędów (`generation-error-logs-endpoint-implementation-plan.md`)
+    - GET /api/generation-error-logs z paginacją
+    - Service layer i walidacja
+
+- **Tracking endpointów** (ToDo/):
+  - Zaktualizowano `endpoints-todo.md`: 13/13 planów gotowych do implementacji
+  - Status: WSZYSTKIE PLANY KOMPLETNE
+
+### Szczegóły techniczne
+- Wszystkie plany zgodne z istniejącymi wzorcami projektu
+- Uwzględniono bezpieczeństwo, walidację, obsługę błędów
+- Scenariusze testów manualnych dla każdego endpointu
+
+---
+
 ## [0.1.0] - 2026-01-26
 
 ### Dodane
