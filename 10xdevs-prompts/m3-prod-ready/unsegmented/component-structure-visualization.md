@@ -1,0 +1,3 @@
+# Component Structure Visualization
+
+In ASCII format, present the structure of components and dependencies starting from @RulePreview.tsx
