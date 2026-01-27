@@ -117,3 +117,16 @@ export type GenerationErrorLogDto = Pick<
   GenerationErrorLog,
   "id" | "error_code" | "error_message" | "model" | "source_text_hash" | "source_text_length" | "created_at" | "user_id"
 >;
+
+// ------------------------------------------------------------------------------------------------
+// 11. Flashcards Query Params
+//     Query parameters for the GET /flashcards endpoint with pagination, sorting and filtering.
+// ------------------------------------------------------------------------------------------------
+export interface FlashcardsQueryParams {
+  page: number;
+  limit: number;
+  sort: string;
+  order: "asc" | "desc";
+  source?: Source;
+  generation_id?: number;
+}

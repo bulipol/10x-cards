@@ -1,10 +1,85 @@
 import type { APIRoute } from "astro";
 import { z } from "zod";
-import type { FlashcardsCreateCommand } from "../../types";
-import { DEFAULT_USER_ID } from "../../db/supabase.client";
-import { DatabaseError, FlashcardService } from "../../lib/flashcard.service";
+import type { FlashcardsCreateCommand } from "../../../types";
+import { DEFAULT_USER_ID } from "../../../db/supabase.client";
+import { DatabaseError, FlashcardService } from "../../../lib/flashcard.service";
+import { flashcardsQuerySchema } from "../../../lib/schemas/flashcards.schema";
 
 export const prerender = false;
+
+export const GET: APIRoute = async ({ request, locals }) => {
+  try {
+    // TODO: ETAP 3 - Odkomentować auth check
+    // const {
+    //   data: { user },
+    //   error: authError,
+    // } = await locals.supabase.auth.getUser();
+    // if (authError || !user) {
+    //   return new Response(JSON.stringify({ error: "Unauthorized" }), {
+    //     status: 401,
+    //     headers: { "Content-Type": "application/json" },
+    //   });
+    // }
+
+    // Validate query params
+    const url = new URL(request.url);
+    const queryParams = Object.fromEntries(url.searchParams);
+    const validationResult = flashcardsQuerySchema.safeParse(queryParams);
+
+    if (!validationResult.success) {
+      return new Response(
+        JSON.stringify({
+          error: "Validation failed",
+          details: validationResult.error.flatten().fieldErrors,
+        }),
+        {
+          status: 400,
+          headers: { "Content-Type": "application/json" },
+        }
+      );
+    }
+
+    // Get flashcards using service
+    const flashcardService = new FlashcardService(locals.supabase);
+    const { data, total } = await flashcardService.getFlashcards(validationResult.data);
+
+    // Return response with pagination
+    return new Response(
+      JSON.stringify({
+        data,
+        pagination: {
+          page: validationResult.data.page,
+          limit: validationResult.data.limit,
+          total,
+        },
+      }),
+      {
+        status: 200,
+        headers: { "Content-Type": "application/json" },
+      }
+    );
+  } catch (error) {
+    console.error("Error fetching flashcards:", error);
+
+    if (error instanceof DatabaseError) {
+      return new Response(
+        JSON.stringify({
+          error: error.message,
+          details: error.details,
+        }),
+        {
+          status: 500,
+          headers: { "Content-Type": "application/json" },
+        }
+      );
+    }
+
+    return new Response(JSON.stringify({ error: "Internal server error" }), {
+      status: 500,
+      headers: { "Content-Type": "application/json" },
+    });
+  }
+};
 
 // Validation schema for individual flashcard
 const flashcardSchema = z

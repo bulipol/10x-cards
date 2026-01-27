@@ -143,29 +143,44 @@ Funkcjonalności opcjonalne lub do późniejszej implementacji.
 
 ---
 
-## Kolejność implementacji (rekomendowana)
+## Kolejność implementacji (ZAKTUALIZOWANA - 2026-01-27)
+
+**NOWA STRATEGIA:** Najpierw funkcjonalność z hardcoded user, potem auth, na końcu SSR.
+
+Zobacz szczegóły: [mvp-implementation-plan-2026-01-27.md](mvp-implementation-plan-2026-01-27.md)
 
 ```
-1. [MVP] Auth: register, login, logout
-   ├── Status planu: ✅ GOTOWY
-   └── Umożliwia uruchomienie aplikacji z użytkownikami
+ETAP 1: Funkcjonalność biznesowa (z DEFAULT_USER_ID)
+├── 1.1. [CRUD] Flashcards: GET list, GET by id, PUT, DELETE
+│   ├── Status planu: ✅ GOTOWY
+│   └── Pełna funkcjonalność zarządzania fiszkami
+├── 1.2. [READ] Generations: GET list, GET by id
+│   ├── Status planu: ✅ GOTOWY
+│   └── Historia generacji
+└── 1.3. [UI] Sesja nauki /session
+    └── Główna funkcjonalność - uczenie się z fiszek!
 
-2. [CRUD] Flashcards: GET list, GET by id, PUT, DELETE
-   ├── Status planu: ✅ GOTOWY
-   └── Pełna funkcjonalność zarządzania fiszkami
+ETAP 2: Auth UI + Endpoints
+├── 2.1. [AUTH] register, login, logout
+│   ├── Status planu: ✅ GOTOWY
+│   └── Strony + API endpoints
+└── 2.2. [UI] Strony /login, /register
+    └── Formularze uwierzytelniania
 
-3. [READ] Generations: GET list, GET by id
-   ├── Status planu: ✅ GOTOWY
-   └── Historia generacji
+ETAP 3: SSR + Refaktor
+├── 3.1. Instalacja @supabase/ssr
+├── 3.2. Middleware z auth check
+├── 3.3. Refaktor serwisów (usunięcie DEFAULT_USER_ID)
+└── 3.4. Podmiana wszystkich endpointów na locals.user.id
 
-4. [AUTH] Reset password, Update password
-   ├── Status planu: ✅ GOTOWY (w ramach planu auth)
-   └── Odzyskiwanie dostępu
-
-5. [LOW] Delete account, Error logs
-   ├── Status planu: ✅ DELETE account GOTOWY (w ramach planu auth)
-   ├── Status planu: ✅ Error logs GOTOWY
-   └── Funkcjonalności dodatkowe
+ETAP 4: Opcjonalne (NICE TO HAVE)
+├── 4.1. [AUTH] Reset password, Update password
+│   ├── Status planu: ✅ GOTOWY (w ramach planu auth)
+│   └── Odzyskiwanie dostępu
+└── 4.2. [LOW] Delete account, Error logs
+    ├── Status planu: ✅ DELETE account GOTOWY
+    ├── Status planu: ✅ Error logs GOTOWY
+    └── Funkcjonalności dodatkowe
 ```
 
 ---
@@ -178,3 +193,4 @@ Funkcjonalności opcjonalne lub do późniejszej implementacji.
 | 2026-01-26 | Aktualizacja - dodano informacje o statusie planów implementacji |
 | 2026-01-26 | Utworzono plan implementacji dla wszystkich endpointów auth (6 endpointów: register, login, logout, reset-password, update-password, DELETE account) |
 | 2026-01-26 | Utworzono plan implementacji dla GET /generation-error-logs - **WSZYSTKIE PLANY KOMPLETNE (13/13)** |
+| 2026-01-27 | **ZAKTUALIZOWANO KOLEJNOŚĆ:** Najpierw funkcjonalność biznesowa (ETAP 1), potem auth UI (ETAP 2), na końcu SSR (ETAP 3). Szczegóły w mvp-implementation-plan-2026-01-27.md |

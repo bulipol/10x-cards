@@ -1,5 +1,5 @@
 import type { SupabaseClient } from "../db/supabase.client";
-import type { FlashcardCreateDto, FlashcardDto } from "../types";
+import type { FlashcardCreateDto, FlashcardDto, FlashcardsQueryParams, FlashcardUpdateDto } from "../types";
 import type { PostgrestError } from "@supabase/supabase-js";
 
 export class DatabaseError extends Error {
@@ -83,5 +83,109 @@ export class FlashcardService {
         "One or more generation_ids do not exist"
       );
     }
+  }
+
+  /**
+   * Retrieves flashcards with pagination, sorting, and filtering
+   * @param params - Query parameters for pagination, sorting, and filtering
+   * @returns Object with flashcards data and total count
+   * @throws {DatabaseError} When database operation fails
+   */
+  async getFlashcards(params: FlashcardsQueryParams): Promise<{ data: FlashcardDto[]; total: number }> {
+    const offset = (params.page - 1) * params.limit;
+
+    let query = this.supabase
+      .from("flashcards")
+      .select("id, front, back, source, generation_id, created_at, updated_at", { count: "exact" });
+
+    // Apply filters
+    if (params.source) {
+      query = query.eq("source", params.source);
+    }
+
+    if (params.generation_id) {
+      query = query.eq("generation_id", params.generation_id);
+    }
+
+    // Apply sorting
+    query = query.order(params.sort, { ascending: params.order === "asc" });
+
+    // Apply pagination
+    query = query.range(offset, offset + params.limit - 1);
+
+    const { data, error, count } = await query;
+
+    if (error) {
+      throw new DatabaseError("Failed to fetch flashcards", error.code || "UNKNOWN", error.message);
+    }
+
+    return {
+      data: (data as FlashcardDto[]) || [],
+      total: count || 0,
+    };
+  }
+
+  /**
+   * Retrieves a single flashcard by ID
+   * @param id - The flashcard ID
+   * @returns Flashcard data or null if not found
+   * @throws {DatabaseError} When database operation fails
+   */
+  async getFlashcardById(id: number): Promise<FlashcardDto | null> {
+    const { data, error } = await this.supabase
+      .from("flashcards")
+      .select("id, front, back, source, generation_id, created_at, updated_at")
+      .eq("id", id)
+      .single();
+
+    if (error) {
+      if (error.code === "PGRST116") {
+        return null;
+      }
+      throw new DatabaseError("Failed to fetch flashcard", error.code || "UNKNOWN", error.message);
+    }
+
+    return data as FlashcardDto;
+  }
+
+  /**
+   * Updates an existing flashcard with partial data
+   * @param id - The flashcard ID
+   * @param updateData - Partial flashcard data to update
+   * @returns Updated flashcard or null if not found
+   * @throws {DatabaseError} When database operation fails
+   */
+  async updateFlashcard(id: number, updateData: FlashcardUpdateDto): Promise<FlashcardDto | null> {
+    const { data, error } = await this.supabase
+      .from("flashcards")
+      .update(updateData)
+      .eq("id", id)
+      .select("id, front, back, source, generation_id, created_at, updated_at")
+      .single();
+
+    if (error) {
+      if (error.code === "PGRST116") {
+        return null;
+      }
+      throw new DatabaseError("Failed to update flashcard", error.code || "UNKNOWN", error.message);
+    }
+
+    return data as FlashcardDto;
+  }
+
+  /**
+   * Deletes a flashcard by ID
+   * @param id - The flashcard ID
+   * @returns True if flashcard was deleted, false if not found
+   * @throws {DatabaseError} When database operation fails
+   */
+  async deleteFlashcard(id: number): Promise<boolean> {
+    const { error, count } = await this.supabase.from("flashcards").delete({ count: "exact" }).eq("id", id);
+
+    if (error) {
+      throw new DatabaseError("Failed to delete flashcard", error.code || "UNKNOWN", error.message);
+    }
+
+    return (count || 0) > 0;
   }
 }
