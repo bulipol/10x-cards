@@ -101,16 +101,44 @@ export interface GenerationCreateResponseDto {
 }
 
 // ------------------------------------------------------------------------------------------------
-// 9. Generation Detail DTO
-//    Provides detailed information for a generation request (GET /generations/{id}),
-//    including metadata from the generations table and optionally, the associated flashcards.
+// 9. Generation DTO
+//    Represents a single generation in a list (GET /generations).
+//    Contains only the essential fields without related flashcards.
+// ------------------------------------------------------------------------------------------------
+export type GenerationDto = Pick<
+  Generation,
+  | "id"
+  | "model"
+  | "generated_count"
+  | "accepted_unedited_count"
+  | "accepted_edited_count"
+  | "source_text_hash"
+  | "source_text_length"
+  | "generation_duration"
+  | "created_at"
+  | "updated_at"
+>;
+
+// ------------------------------------------------------------------------------------------------
+// 10. Generations List Response DTO
+//     Response for GET /api/generations endpoint with pagination
+// ------------------------------------------------------------------------------------------------
+export interface GenerationsListResponseDto {
+  data: GenerationDto[];
+  pagination: PaginationDto;
+}
+
+// ------------------------------------------------------------------------------------------------
+// 11. Generation Detail DTO
+//     Provides detailed information for a generation request (GET /generations/{id}),
+//     including metadata from the generations table and optionally, the associated flashcards.
 // ------------------------------------------------------------------------------------------------
 export type GenerationDetailDto = Generation & {
   flashcards?: FlashcardDto[];
 };
 
 // ------------------------------------------------------------------------------------------------
-// 10. Generation Error Log DTO
+// 12. Generation Error Log DTO
 //     Represents an error log entry for the AI flashcard generation process (GET /generation-error-logs).
 // ------------------------------------------------------------------------------------------------
 export type GenerationErrorLogDto = Pick<
@@ -119,7 +147,7 @@ export type GenerationErrorLogDto = Pick<
 >;
 
 // ------------------------------------------------------------------------------------------------
-// 11. Flashcards Query Params
+// 13. Flashcards Query Params
 //     Query parameters for the GET /flashcards endpoint with pagination, sorting and filtering.
 // ------------------------------------------------------------------------------------------------
 export interface FlashcardsQueryParams {

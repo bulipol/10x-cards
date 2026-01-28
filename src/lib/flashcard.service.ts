@@ -38,7 +38,68 @@ export class FlashcardService {
       this.handleDatabaseError(error);
     }
 
+    // Update generation counts after successfully creating flashcards
+    await this.updateGenerationCounts(flashcards);
+
     return data as FlashcardDto[];
+  }
+
+  /**
+   * Updates generation counts (accepted_unedited_count and accepted_edited_count)
+   * based on the flashcards that were just created
+   * @param flashcards - Array of flashcard data that was created
+   */
+  private async updateGenerationCounts(flashcards: FlashcardCreateDto[]): Promise<void> {
+    // Group flashcards by generation_id
+    const generationGroups = new Map<number, { aiFull: number; aiEdited: number }>();
+
+    for (const flashcard of flashcards) {
+      if (flashcard.generation_id === null) continue;
+
+      const genId = flashcard.generation_id;
+      if (!generationGroups.has(genId)) {
+        generationGroups.set(genId, { aiFull: 0, aiEdited: 0 });
+      }
+
+      const counts = generationGroups.get(genId)!;
+      if (flashcard.source === "ai-full") {
+        counts.aiFull++;
+      } else if (flashcard.source === "ai-edited") {
+        counts.aiEdited++;
+      }
+    }
+
+    // Update counts for each generation
+    for (const [generationId, counts] of generationGroups) {
+      // Get current values
+      const { data: current, error: fetchError } = await this.supabase
+        .from("generations")
+        .select("accepted_unedited_count, accepted_edited_count")
+        .eq("id", generationId)
+        .single();
+
+      if (fetchError) {
+        console.error(`Failed to fetch generation ${generationId} for count update:`, fetchError);
+        continue;
+      }
+
+      if (current) {
+        const newUnedited = (current.accepted_unedited_count ?? 0) + counts.aiFull;
+        const newEdited = (current.accepted_edited_count ?? 0) + counts.aiEdited;
+
+        const { error: updateError } = await this.supabase
+          .from("generations")
+          .update({
+            accepted_unedited_count: newUnedited,
+            accepted_edited_count: newEdited,
+          })
+          .eq("id", generationId);
+
+        if (updateError) {
+          console.error(`Failed to update generation ${generationId} counts:`, updateError);
+        }
+      }
+    }
   }
 
   /**
