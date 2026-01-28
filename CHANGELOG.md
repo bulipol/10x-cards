@@ -4,6 +4,120 @@ Wszystkie istotne zmiany w projekcie 10x-cards będą dokumentowane w tym pliku.
 
 Format oparty na [Keep a Changelog](https://keepachangelog.com/pl/1.1.0/).
 
+## [0.5.0] - 2026-01-28
+
+### Dodane
+
+- **Pełna autentykacja użytkowników** (ETAP 2-3 MVP):
+  - Strony logowania i rejestracji (`/login`, `/register`)
+  - Formularze z walidacją client-side i server-side (Zod)
+  - Prawdziwa autentykacja przez Supabase Auth z httpOnly cookies
+  - Middleware SSR chroniący protected routes
+  - UserMenu z wylogowaniem i wyświetlaniem email użytkownika
+  - Session persistence po refresh strony
+
+- **Auth UI Components** (src/components/auth/):
+  - `LoginForm.tsx` - formularz logowania z error handling (~95 LOC)
+  - `RegisterForm.tsx` - formularz rejestracji z walidacją hasła (~105 LOC)
+  - `UserMenu.tsx` - dropdown menu użytkownika z logout (~70 LOC)
+
+- **Auth API Endpoints** (src/pages/api/auth/):
+  - `POST /api/auth/register` - rejestracja użytkownika przez Supabase
+  - `POST /api/auth/login` - logowanie przez Supabase
+  - `POST /api/auth/logout` - wylogowanie (signOut)
+
+- **SSR Support** (src/db/supabase.client.ts):
+  - `createSupabaseServerInstance()` - wrapper dla @supabase/ssr
+  - Cookie handling dla session management
+  - Type-safe context z AstroCookies i Headers
+
+- **Middleware autentykacji** (src/middleware/index.ts):
+  - Auth check dla każdego requestu
+  - Automatyczne przekierowanie do /login dla protected routes
+  - PUBLIC_PATHS: /login, /register, /api/auth/*
+  - locals.user i locals.supabase dla wszystkich endpointów
+
+- **Walidacja Zod** (src/lib/schemas/):
+  - `auth.schema.ts` - schematy dla login, register
+  - Walidacja email (max 255 znaków)
+  - Walidacja hasła (min 8, litera + cyfra, max 72)
+
+- **Typy TypeScript** (src/types.ts):
+  - `User` - interfejs użytkownika (id, email, created_at)
+  - `AuthState` - stan autentykacji (user, isLoading, error)
+  - `AuthErrorCode` - kody błędów auth
+
+- **Env.d.ts extension**:
+  - `App.Locals` - typowanie locals.user i locals.supabase
+
+- **Strony Astro**:
+  - `login.astro` - strona logowania z centered layout
+  - `register.astro` - strona rejestracji
+
+### Zmienione
+
+- **Multi-user isolation** (KRYTYCZNY BUGFIX):
+  - `src/lib/flashcard.service.ts` - dodano userId do wszystkich metod:
+    - `getFlashcards(userId, params)` - filtrowanie `.eq("user_id", userId)`
+    - `getFlashcardById(userId, id)` - filtrowanie `.eq("user_id", userId)`
+    - `updateFlashcard(userId, id, data)` - filtrowanie `.eq("user_id", userId)`
+    - `deleteFlashcard(userId, id)` - filtrowanie `.eq("user_id", userId)`
+  - **Problem:** Użytkownicy widzieli fiszki innych użytkowników
+  - **Rozwiązanie:** Pełna izolacja danych per user
+
+- **Business Endpoints - refaktoryzacja auth**:
+  - `src/lib/generation.service.ts`:
+    - Usunięto DEFAULT_USER_ID
+    - Dodano userId jako parametr do generateFlashcards(), saveGenerationMetadata(), logGenerationError()
+  - `src/pages/api/generations/index.ts`, `[id].ts`:
+    - Dodano auth check `if (!user) return 401`
+    - Przekazywanie user.id zamiast DEFAULT_USER_ID
+  - `src/pages/api/flashcards/index.ts`, `[id].ts`:
+    - Dodano auth check `if (!user) return 401`
+    - Zaktualizowano wywołania FlashcardService z user.id
+
+- **Navigation z autentykacją**:
+  - `src/components/Navigation.tsx` - dodano prop user, integracja UserMenu
+  - `src/layouts/Layout.astro` - przekazywanie Astro.locals.user do Navigation
+
+- **Package.json**:
+  - Wersja 0.4.0 → 0.5.0
+  - Dodano @supabase/ssr (nowa zależność)
+
+### Usunięte
+
+- `src/db/supabase.client.ts`:
+  - **DEFAULT_USER_ID** - całkowicie usunięty z projektu
+  - Wszyscy użytkownicy mają teraz prawdziwe ID z Supabase Auth
+
+### Zabezpieczenia
+
+- ✅ HttpOnly cookies dla sesji (ochrona przed XSS)
+- ✅ Middleware chroni wszystkie protected routes
+- ✅ Multi-user isolation - pełna separacja danych
+- ✅ Walidacja Zod w każdym endpointcie auth
+- ✅ Error handling nie ujawnia szczegółów implementacji
+
+### Szczegóły techniczne
+
+- **Łącznie:** ~625 LOC nowych, ~110 LOC zmian
+- **@supabase/ssr:** Server-side rendering z cookie management
+- **Session management:** Automatyczne odświeżanie tokenów
+- **Type safety:** Pełna typizacja TypeScript w całym flow auth
+- **Error handling:** try/catch z odpowiednimi status codes (401, 409, 500)
+- **Loading states:** spinners i disabled states dla wszystkich formularzy
+
+### Testy manualne
+
+- ✅ Rejestracja nowego użytkownika działa
+- ✅ Logowanie istniejącego użytkownika działa
+- ✅ Wylogowanie działa
+- ✅ Protected routes przekierowują do /login
+- ✅ Multi-user isolation - każdy użytkownik widzi tylko swoje dane
+- ✅ Session persists po refresh strony
+
+---
+
 ## [0.4.0] - 2026-01-28
 
 ### Dodane

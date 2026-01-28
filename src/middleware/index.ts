@@ -1,11 +1,27 @@
 import { defineMiddleware } from "astro:middleware";
+import { createSupabaseServerInstance } from "../db/supabase.client";
 
-import { supabaseClient } from "../db/supabase.client";
+const PUBLIC_PATHS = ["/login", "/register", "/api/auth/login", "/api/auth/register"];
 
-//Public paths that should be accessible without authentication
-// const PUBLIC_PATHS = ["/login", "/register", "/reset-password"];
+export const onRequest = defineMiddleware(async ({ locals, cookies, url, request, redirect }, next) => {
+  const supabase = createSupabaseServerInstance({
+    cookies,
+    headers: request.headers,
+  });
 
-export const onRequest = defineMiddleware((context, next) => {
-  context.locals.supabase = supabaseClient;
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  if (user) {
+    locals.user = {
+      email: user.email!,
+      id: user.id,
+    };
+  } else if (!PUBLIC_PATHS.includes(url.pathname) && !url.pathname.startsWith("/api/auth/")) {
+    return redirect("/login");
+  }
+
+  locals.supabase = supabase;
   return next();
 });

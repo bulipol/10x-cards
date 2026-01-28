@@ -3,7 +3,6 @@ import type { APIRoute } from "astro";
 import type { GenerateFlashcardsCommand, GenerationsListResponseDto } from "../../../types";
 import { GenerationService } from "../../../lib/generation.service";
 import { generationsPaginationSchema } from "../../../lib/schemas/generations.schema";
-import { DEFAULT_USER_ID } from "../../../db/supabase.client";
 
 export const prerender = false;
 
@@ -17,6 +16,14 @@ const generateFlashcardsSchema = z.object({
 
 export const POST: APIRoute = async ({ request, locals }) => {
   try {
+    const { user } = locals;
+    if (!user) {
+      return new Response(JSON.stringify({ error: "Unauthorized" }), {
+        status: 401,
+        headers: { "Content-Type": "application/json" },
+      });
+    }
+
     // Parse and validate request body
     const body = (await request.json()) as GenerateFlashcardsCommand;
     const validationResult = generateFlashcardsSchema.safeParse(body);
@@ -38,7 +45,7 @@ export const POST: APIRoute = async ({ request, locals }) => {
     const generationService = new GenerationService(locals.supabase, {
       apiKey: import.meta.env.OPENROUTER_API_KEY,
     });
-    const result = await generationService.generateFlashcards(body.source_text);
+    const result = await generationService.generateFlashcards(user.id, body.source_text);
 
     return new Response(JSON.stringify(result), {
       status: 201,
@@ -55,12 +62,13 @@ export const POST: APIRoute = async ({ request, locals }) => {
 
 export const GET: APIRoute = async ({ locals, request }) => {
   try {
-    // TODO: ETAP 3 - Replace with real auth check
-    // const { data: { user }, error: authError } = await locals.supabase.auth.getUser();
-    // if (authError || !user) {
-    //   return new Response(JSON.stringify({ error: "Unauthorized" }), { status: 401 });
-    // }
-    const userId = DEFAULT_USER_ID;
+    const { user } = locals;
+    if (!user) {
+      return new Response(JSON.stringify({ error: "Unauthorized" }), {
+        status: 401,
+        headers: { "Content-Type": "application/json" },
+      });
+    }
 
     // Parse and validate query parameters
     const url = new URL(request.url);
@@ -89,7 +97,7 @@ export const GET: APIRoute = async ({ locals, request }) => {
     const generationService = new GenerationService(locals.supabase, {
       apiKey: import.meta.env.OPENROUTER_API_KEY,
     });
-    const { data, total } = await generationService.getAll(userId, page, limit);
+    const { data, total } = await generationService.getAll(user.id, page, limit);
 
     // Build response
     const response: GenerationsListResponseDto = {

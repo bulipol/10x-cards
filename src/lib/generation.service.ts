@@ -2,7 +2,6 @@ import crypto from "crypto";
 import type { FlashcardProposalDto, GenerationCreateResponseDto, GenerationDto, GenerationDetailDto } from "../types";
 import type { SupabaseClient } from "../db/supabase.client";
 import type { PostgrestError } from "@supabase/supabase-js";
-import { DEFAULT_USER_ID } from "../db/supabase.client";
 import { OpenRouterService } from "./openrouter.service";
 import { OpenRouterError } from "./openrouter.types";
 
@@ -160,7 +159,7 @@ Focus on important facts, definitions, concepts, and relationships.`);
     return generation as GenerationDetailDto;
   }
 
-  async generateFlashcards(sourceText: string): Promise<GenerationCreateResponseDto> {
+  async generateFlashcards(userId: string, sourceText: string): Promise<GenerationCreateResponseDto> {
     try {
       // 1. Calculate metadata
       const startTime = Date.now();
@@ -170,7 +169,7 @@ Focus on important facts, definitions, concepts, and relationships.`);
       const proposals = await this.callAIService(sourceText);
 
       // 3. Save generation metadata
-      const generationId = await this.saveGenerationMetadata({
+      const generationId = await this.saveGenerationMetadata(userId, {
         sourceText,
         sourceTextHash,
         generatedCount: proposals.length,
@@ -184,7 +183,7 @@ Focus on important facts, definitions, concepts, and relationships.`);
       };
     } catch (error) {
       // Log error and save to generation_error_logs
-      await this.logGenerationError(error, {
+      await this.logGenerationError(userId, error, {
         sourceTextHash: await this.calculateHash(sourceText),
         sourceTextLength: sourceText.length,
       });
@@ -226,7 +225,7 @@ Focus on important facts, definitions, concepts, and relationships.`);
     }
   }
 
-  private async saveGenerationMetadata(data: {
+  private async saveGenerationMetadata(userId: string, data: {
     sourceText: string;
     sourceTextHash: string;
     generatedCount: number;
@@ -235,7 +234,7 @@ Focus on important facts, definitions, concepts, and relationships.`);
     const { data: generation, error } = await this.supabase
       .from("generations")
       .insert({
-        user_id: DEFAULT_USER_ID,
+        user_id: userId,
         source_text_hash: data.sourceTextHash,
         source_text_length: data.sourceText.length,
         generated_count: data.generatedCount,
@@ -250,6 +249,7 @@ Focus on important facts, definitions, concepts, and relationships.`);
   }
 
   private async logGenerationError(
+    userId: string,
     error: unknown,
     data: {
       sourceTextHash: string;
@@ -257,7 +257,7 @@ Focus on important facts, definitions, concepts, and relationships.`);
     }
   ): Promise<void> {
     await this.supabase.from("generation_error_logs").insert({
-      user_id: DEFAULT_USER_ID,
+      user_id: userId,
       error_code: error instanceof Error ? error.name : "UNKNOWN",
       error_message: error instanceof Error ? error.message : String(error),
       model: this.model,

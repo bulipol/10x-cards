@@ -1,0 +1,19 @@
+---
+import Layout from "../layouts/Layout.astro";
+import RegisterForm from "../components/auth/RegisterForm";
+export const prerender = false;
+---
+
+<Layout title="Register - 10x Cards">
+  <div class="min-h-screen flex items-center justify-center bg-background px-4">
+    <div class="w-full max-w-md">
+      <div class="text-center mb-8">
+        <h1 class="text-3xl font-bold">10x Cards</h1>
+        <p class="text-muted-foreground mt-2">Ucz się szybciej z fiszkami AI</p>
+      </div>
+      <div class="border rounded-lg p-8 bg-card">
+        <RegisterForm client:load />
+      </div>
+    </div>
+  </div>
+</Layout>
