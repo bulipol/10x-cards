@@ -30,15 +30,20 @@ Cel: Działająca aplikacja do nauki fiszek, gotowa do testowania
 - ✅ Zadanie 1.1.4: DELETE /api/flashcards/[id] - usuwanie fiszki
 
 **Frontend:**
-- ⏳ Zadanie 1.2.1: Widok /flashcards - lista fiszek
-- ⏳ Zadanie 1.2.2: Modal edycji fiszki
-- ⏳ Zadanie 1.2.3: Usuwanie fiszki z potwierdzeniem
-- ⏳ Zadanie 1.2.4: Ręczne dodawanie fiszki
+- ✅ Zadanie 1.2.1: Widok /flashcards - lista fiszek
+- ✅ Zadanie 1.2.2: Modal edycji fiszki
+- ✅ Zadanie 1.2.3: Usuwanie fiszki z potwierdzeniem
+- ✅ Zadanie 1.2.4: Ręczne dodawanie fiszki
 
 **Pozostałe:**
-- ⏳ 1.3. Generations READ
-- ⏳ 1.4. Sesja nauki
-- ⏳ 1.5. Nawigacja
+- ✅ 1.3. Generations READ (backend + frontend - kompletne!)
+- ✅ 1.4. Sesja nauki (kompletna!)
+- ✅ 1.5. Nawigacja (kompletna!)
+
+**Status:** 🎉 **ETAP 1 W 100% ZAKOŃCZONY!** Wszystkie zadania (włącznie z opcjonalnym 1.3.3) zrealizowane.
+
+**Uwaga:** Szczegółowy postęp implementacji znajduje się w pliku:
+`ToDo/generations-study-nav-implementation-progress.md`
 
 **Uwaga:** Auth checks zostały tymczasowo zakomentowane (tag `TODO: ETAP 3`) zgodnie z filozofią MVP. Wszystkie endpointy działają z `DEFAULT_USER_ID`.
 
@@ -183,84 +188,104 @@ Cel: Działająca aplikacja do nauki fiszek, gotowa do testowania
 
 ### 1.3. Generations READ (Priorytet: ŚREDNI)
 
-#### [ ] Zadanie 1.3.1: GET /api/generations - lista generacji
+#### [x] Zadanie 1.3.1: GET /api/generations - lista generacji ✅
 **Plik:** `src/pages/api/generations/index.ts` (rozszerzenie istniejącego)
 **Zależności:** Brak
 **Plan:** `.ai/generations-get-endpoint-implementation-plan.md` (sekcja 2.1)
+**Data zakończenia:** 2026-01-27
 
-**Co zrobić:**
-- Dodać metodę `getAll()` do `GenerationService`
-- Implementacja GET handler w `index.ts`
-- Parametry query: `page`, `limit`, `sort`
-- Zwraca listę `GenerationDto[]` z paginacją
-- Filtrowanie po `DEFAULT_USER_ID`
-- Sortowanie domyślne: `created_at DESC`
+**Zrealizowane:**
+- ✅ Dodano metodę `getAll()` do `GenerationService`
+- ✅ Implementacja GET handler w `index.ts`
+- ✅ Parametry query: `page`, `limit` (z domyślnymi wartościami)
+- ✅ Zwraca listę `GenerationDto[]` z paginacją
+- ✅ Filtrowanie po `DEFAULT_USER_ID`
+- ✅ Sortowanie: `created_at DESC`
+- ✅ Bug fix: null → undefined dla query params
 
-**Rezultat:** Możliwość pobierania historii generacji
+**Rezultat:** API do pobierania historii generacji działa
 
 ---
 
-#### [ ] Zadanie 1.3.2: GET /api/generations/[id] - szczegóły generacji
+#### [x] Zadanie 1.3.2: GET /api/generations/[id] - szczegóły generacji ✅
 **Plik:** `src/pages/api/generations/[id].ts` (nowy)
 **Zależności:** Zadanie 1.3.1
 **Plan:** `.ai/generations-get-endpoint-implementation-plan.md` (sekcja 2.2)
+**Data zakończenia:** 2026-01-27
 
-**Co zrobić:**
-- Dodać metodę `getById()` do `GenerationService`
-- Implementacja GET handler
-- Join z tabelą `flashcards` - pobiera powiązane fiszki
-- Zwraca: `GenerationDetailDto` (generation + flashcards[])
-- Walidacja: czy generacja należy do użytkownika
+**Zrealizowane:**
+- ✅ Dodano metodę `getById()` do `GenerationService`
+- ✅ Implementacja GET handler
+- ✅ JOIN z tabelą `flashcards` - pobiera powiązane fiszki
+- ✅ Zwraca: `GenerationDetailDto` (generation + flashcards[])
+- ✅ Walidacja: czy generacja należy do użytkownika
+- ✅ 404 dla nieistniejących generacji
 
-**Rezultat:** Możliwość przeglądania szczegółów generacji
+**Rezultat:** API do szczegółów generacji działa
 
 ---
 
-#### [ ] Zadanie 1.3.3: (OPCJONALNE) Widok /generations - historia
+#### [x] Zadanie 1.3.3: Widok /generations - historia ✅
 **Plik:** `src/pages/generations.astro` (nowy)
 **Zależności:** Zadanie 1.3.1, 1.3.2
+**Status:** ✅ **ZAKOŃCZONE**
+**Data zakończenia:** 2026-01-28
 
-**Co zrobić:**
-- Strona z listą generacji
-- Dla każdej generacji:
-  - Data utworzenia
-  - Liczba wygenerowanych fiszek
-  - Status (success/error)
-  - Przycisk "Zobacz szczegóły" → link do /generations/[id]
-- Opcjonalnie: podstrona z szczegółami
+**Zrealizowane:**
+- ✅ Strona /generations z listą generacji
+- ✅ Hook useGenerations do zarządzania stanem (43 LOC)
+- ✅ Komponenty:
+  - GenerationCard (101 LOC) - karta pojedynczej generacji z statystykami
+  - GenerationsList (15 LOC) - lista kart
+  - GenerationsView (81 LOC) - główny widok z paginacją
+- ✅ Dla każdej generacji:
+  - Data utworzenia (formatowana)
+  - Badge z nazwą modelu (np. "Claude 3.5 Sonnet")
+  - Statystyki: generated, accepted (unedited/edited), total
+  - Metryki: source text length, generation duration
+- ✅ Responsive design (mobile + desktop)
+- ✅ 4 stany UI: loading, error, empty, lista
+- ✅ Paginacja (10 generacji na stronę)
+- ✅ Link "History" w Navigation
 
-**Rezultat:** Użytkownik widzi historię co generował
+**Rezultat:** Użytkownik widzi pełną historię swoich generacji AI! (251 LOC w 6 plikach)
 
-**UWAGA:** To zadanie można pominąć jeśli chcemy szybciej MVP. Historia jest dostępna przez API.
+**Szczegółowy plan:** `ToDo/generations-view-implementation-plan.md`
 
 ---
 
 ### 1.4. Sesja nauki (Priorytet: KRYTYCZNY!)
 
-#### [ ] Zadanie 1.4.1: Widok /session - podstawowa sesja nauki
-**Plik:** `src/pages/session.astro` (nowy)
+#### [x] Zadanie 1.4.1: Widok /study - podstawowa sesja nauki ✅
+**Plik:** `src/pages/study.astro` (nowy)
 **Zależności:** Zadanie 1.1.1 (potrzebujemy GET /flashcards)
-**Plan:** Brak, ale inspiracja z `analizaWorkDone.md` (sekcja 2.1)
+**Data zakończenia:** 2026-01-28
 
-**Co zrobić:**
-- Strona `session.astro`
-- Komponent `StudySessionView.tsx` (client:load)
-- Fetch GET /api/flashcards (wszystkie fiszki użytkownika)
-- **Prosty algorytm:** losowy wybór fiszek
-- Stan sesji:
-  - `currentIndex` - aktualna fiszka
-  - `showAnswer` - czy pokazać back
-  - `completed` - liczba przejrzanych fiszek
-- UI:
-  - Wyświetlanie front fiszki
-  - Przycisk "Pokaż odpowiedź" → pokazuje back
-  - Przycisk "Następna fiszka" → losuje kolejną
-  - Licznik postępu "5 / 20"
-- **Bez zapisywania postępów** (na razie)
+**Zrealizowane:**
+- ✅ Strona `study.astro` (nie session.astro - zmieniono nazwę na study)
+- ✅ Komponent `StudySessionView.tsx` (client:load)
+- ✅ Hook `useStudySession` do zarządzania stanem
+- ✅ Komponenty pomocnicze:
+  - `StudyCard.tsx` - karta fiszki z flip funkcjonalnością
+  - `StudySessionProgress.tsx` - progress bar
+- ✅ Fetch GET /api/flashcards (limit 100)
+- ✅ **Fisher-Yates shuffle algorithm** dla losowego wyboru
+- ✅ Stan sesji: currentIndex, showBack, completed, total, isSessionCompleted
+- ✅ UI z 5 stanami:
+  - Loading (SkeletonLoader)
+  - Error (ErrorNotification + Try Again)
+  - Empty (brak fiszek + link do /flashcards)
+  - Active (StudyCard + Progress + buttons)
+  - Completed (🎉 success screen + restart)
+- ✅ Przyciski:
+  - "Show Answer" → odkrywa back
+  - "Next Card" → kolejna fiszka (disabled do czasu pokazania odpowiedzi)
+  - "Restart Session" → nowa sesja z reshuffle
+- ✅ Licznik postępu z procentami
 
-**Rezultat:** Użytkownik może się uczyć z fiszek!
+**Rezultat:** Pełna funkcjonalna sesja nauki! (~326 LOC w 4 plikach)
 
-**UWAGA:** To najbardziej wartościowe zadanie dla użytkownika końcowego!
+**UWAGA:** To najbardziej wartościowe zadanie dla użytkownika - ZAKOŃCZONE! 🎉
 
 ---
 
@@ -286,51 +311,69 @@ Cel: Działająca aplikacja do nauki fiszek, gotowa do testowania
 
 ### 1.5. Nawigacja (Priorytet: WYSOKI)
 
-#### [ ] Zadanie 1.5.1: Komponent Navigation
+#### [x] Zadanie 1.5.1: Komponent Navigation ✅
 **Plik:** `src/components/Navigation.tsx` (nowy)
 **Zależności:** Brak
+**Data zakończenia:** 2026-01-28
 
-**Co zrobić:**
-- Komponent `Navigation.tsx`
-- Logo/nazwa aplikacji "10x Cards"
-- Linki:
+**Zrealizowane:**
+- ✅ Komponent `Navigation.tsx` (~80 LOC)
+- ✅ Logo/nazwa aplikacji "10x Cards" → linkuje do home page (/)
+- ✅ Linki:
   - "Generate" → /generate
-  - "Moje Fiszki" → /flashcards
-  - "Sesja nauki" → /session
-- Responsive:
-  - Desktop: poziome menu
-  - Mobile: hamburger menu
-- Active state dla aktualnej strony (highlight)
-- Placeholder dla przycisku "Logout" (nieaktywny, do ETAPU 2)
+  - "My Flashcards" → /flashcards
+  - "Study Session" → /study (nie /session!)
+- ✅ Responsive design:
+  - Desktop: poziome menu (horizontal layout)
+  - Mobile: hamburger menu (toggle state)
+- ✅ Icons: Menu i X z lucide-react
+- ✅ Placeholder przycisk "Logout" (disabled, do ETAPU 2)
+- ✅ Styling: bg-white, border-b, shadow-sm, hover effects
+- ✅ Sticky positioning (top-0, z-50)
+- ✅ Accessibility: aria-label, aria-expanded
 
-**Rezultat:** Łatwe przechodzenie między widokami
+**Rezultat:** Pełny responsive navigation komponent
 
 ---
 
-#### [ ] Zadanie 1.5.2: Integracja Navigation w Layout
+#### [x] Zadanie 1.5.2: Integracja Navigation w Layout ✅
 **Plik:** `src/layouts/Layout.astro` (rozszerzenie)
 **Zależności:** Zadanie 1.5.1
+**Data zakończenia:** 2026-01-28
 
-**Co zrobić:**
-- Dodać `<Navigation client:load />` do Layout.astro
-- Umieścić nad główną treścią
-- Styling: sticky top-0 lub fixed
+**Zrealizowane:**
+- ✅ Dodano `<Navigation client:load />` do Layout.astro
+- ✅ Umieszczono przed `<slot />` (nad główną treścią)
+- ✅ Sticky positioning działa automatycznie (CSS w komponencie)
 
-**Rezultat:** Navigation widoczne na każdej stronie
+**Rezultat:** Navigation widoczny na wszystkich stronach aplikacji
 
 ---
 
-## CHECKPOINT 1: Działająca aplikacja bez auth ✅
+## CHECKPOINT 1: Działająca aplikacja bez auth ✅ ZAKOŃCZONY!
+
+**Data zakończenia:** 2026-01-28
 
 **Na tym etapie masz:**
-- ✅ Generowanie fiszek przez AI
+- ✅ Generowanie fiszek przez AI (POST /api/generations)
 - ✅ Zarządzanie fiszkami (lista, edycja, usuwanie, ręczne dodawanie)
-- ✅ Historia generacji (API, opcjonalnie UI)
-- ✅ Sesja nauki (główna funkcjonalność!)
-- ✅ Nawigacja
+- ✅ Historia generacji - **API + UI gotowe** (GET /api/generations, GET /api/generations/[id], strona /generations)
+- ✅ Sesja nauki - **kompletna** (/study z 5 stanami UI, shuffle, progress)
+- ✅ Nawigacja - **responsive** (desktop + mobile hamburger menu + link History)
 - ✅ Wszystko działa z `DEFAULT_USER_ID`
 
+**Statystyki:**
+- **~951 LOC** zaimplementowanych (+251 LOC widok /generations)
+- **18 plików** utworzonych/zmodyfikowanych (+6 plików dla /generations)
+- **Wszystkie zadania ETAP 1** zakończone (włącznie z opcjonalnym 1.3.3)
+
+**Szczegółowe plany:**
+- `ToDo/generations-study-nav-implementation-progress.md` - Fazy 1-5 (Generations READ backend, Study Session, Navigation)
+- `ToDo/generations-view-implementation-plan.md` - Widok /generations (Zadanie 1.3.3)
+
 **To jest KOMPLETNA DZIAŁAJĄCA APLIKACJA gotowa do testowania!**
+
+**Następny krok:** ETAP 2 (Autentykacja UI) lub testowanie obecnej funkcjonalności
 
 ---
 
@@ -670,27 +713,42 @@ namespace App {
 
 Te można dodać później, po uruchomieniu MVP.
 
-### [ ] 4.1. Paginacja w /flashcards
+### [x] 4.1. Widok /generations - historia (Zadanie 1.3.3) ✅
+**Priorytet:** ŚREDNI
+**Zależności:** Backend już gotowy (GET /api/generations działa)
+**Status:** ✅ **ZAKOŃCZONE** - przeniesione do ETAP 1
+**Data:** 2026-01-28
+
+**Zrealizowane:**
+- ✅ Strona `generations.astro` z listą generacji
+- ✅ Wyświetlanie: data, liczba fiszek, czas generacji, statystyki
+- ✅ Link "History" w Navigation
+- ✅ 251 LOC w 6 plikach
+
+**Rezultat:** Użytkownik widzi pełną historię swoich generacji AI!
+
+**Uwaga:** To zadanie zostało zrealizowane jako część ETAP 1 (Zadanie 1.3.3)
+
+---
+
+### [ ] 4.2. Paginacja w /flashcards
 - Obecnie: pobiera wszystkie fiszki
 - Ulepszenie: dodać paginację (page, limit)
 
-### [ ] 4.2. Filtry w /flashcards
+### [ ] 4.3. Filtry w /flashcards
 - Filtrowanie po `source` (ai-full, ai-edited, manual)
 - Filtrowanie po `generation_id`
 
-### [ ] 4.3. Strona /reset-password
+### [ ] 4.4. Strona /reset-password
 - Endpoint POST /api/auth/reset-password
 - Endpoint POST /api/auth/update-password
 - Strona /auth/callback (obsługa recovery token)
 
-### [ ] 4.4. Algorytm powtórek w sesji nauki
+### [ ] 4.5. Algorytm powtórek w sesji nauki (Zadanie 1.4.2)
 - SM-2 algorithm
-- Migracja DB (dodanie kolumn)
-- Przyciski oceny trudności
-
-### [ ] 4.5. Widok /generations - historia
-- Lista wszystkich generacji
-- Szczegóły każdej generacji
+- Migracja DB (dodanie kolumn: last_reviewed, next_review, ease_factor, repetitions)
+- Przyciski oceny trudności ("Easy", "Medium", "Hard", "Again")
+- Sortowanie fiszek po next_review
 
 ### [ ] 4.6. Statystyki użytkownika
 - Liczba fiszek
@@ -705,13 +763,19 @@ Te można dodać później, po uruchomieniu MVP.
 
 ## Podsumowanie Timeline
 
-| Etap | Liczba zadań | Szacowany czas | Priorytet |
-|------|--------------|----------------|-----------|
-| **ETAP 1** | 14 zadań | 15-20h | 🔴 KRYTYCZNY |
-| **ETAP 2** | 6 zadań | 5-7h | 🔴 KRYTYCZNY |
-| **ETAP 3** | 12 zadań | 6-8h | 🔴 KRYTYCZNY |
-| **ETAP 4** | 7 zadań | ? | 🟢 OPCJONALNY |
-| **SUMA MVP** | **32 zadania** | **26-35h** | - |
+| Etap | Liczba zadań | Status | Priorytet |
+|------|--------------|--------|-----------|
+| **ETAP 1** | 14/14 zadań | ✅ **ZAKOŃCZONY W 100%** | 🔴 KRYTYCZNY |
+| **ETAP 2** | 6 zadań | ⏳ DO ZROBIENIA | 🔴 KRYTYCZNY |
+| **ETAP 3** | 12 zadań | ⏳ DO ZROBIENIA | 🔴 KRYTYCZNY |
+| **ETAP 4** | 6 zadań | 🟢 OPCJONALNY | 🟢 NICE TO HAVE |
+| **SUMA MVP** | **32/32 zadania** | **44% ZAKOŃCZONE** | - |
+
+**Postęp:**
+- ✅ ETAP 1: 14/14 zadań (100%) - **WSZYSTKIE zadania włącznie z opcjonalnym 1.3.3**
+- ⏳ ETAP 2: 0/6 zadań (0%)
+- ⏳ ETAP 3: 0/12 zadań (0%)
+- 🟢 ETAP 4: 0/6 zadań (nice to have) - zadanie 4.1 przeniesione do ETAP 1
 
 ---
 
@@ -727,24 +791,57 @@ Te można dodać później, po uruchomieniu MVP.
 
 ## Kolejność zalecana
 
-**Jeśli chcesz najszybciej zobaczyć wartość:**
-1. Start: ETAP 1 (Zadania 1.1-1.2) - zarządzanie fiszkami
-2. Potem: Zadanie 1.4.1 - sesja nauki ← **NAJWIĘKSZA WARTOŚĆ**
-3. Potem: Zadanie 1.5 - nawigacja
-4. Dopiero potem: ETAP 2 i 3
+**Aktualny status:**
+- ✅ **ETAP 1 ZAKOŃCZONY** - pełna funkcjonalność biznesowa działa z DEFAULT_USER_ID
 
-**Jeśli chcesz metodycznie:**
-- ETAP 1 → ETAP 2 → ETAP 3 (kolejno)
+**Następne kroki:**
+
+**Wariant A - Kontynuacja MVP (zalecane):**
+1. ✅ ETAP 1 - ZAKOŃCZONY
+2. ⏳ **ETAP 2** - Dodaj UI autentykacji (login/register) ← **NASTĘPNY KROK**
+3. ⏳ ETAP 3 - SSR + refaktor (prawdziwy auth, usunięcie DEFAULT_USER_ID)
+4. 🎉 PRODUKCJA
+
+**Wariant B - Testowanie i feedback:**
+1. Przetestuj obecną aplikację (wszystkie strony działają)
+2. Zbierz feedback od użytkowników
+3. Opcjonalnie dodaj features z ETAP 4
+4. Dopiero potem ETAP 2 i 3
+
+**Wariant C - Dodanie opcjonalnych features:**
+1. ✅ ~~Zadanie 1.3.3 (Widok /generations - UI dla historii)~~ - ZROBIONE!
+2. Zadanie 1.4.2 (Algorytm SM-2 dla powtórek)
+3. Inne z ETAP 4
+4. Potem ETAP 2 i 3
 
 ---
 
-## Status: GOTOWE DO ROZPOCZĘCIA
+## Status: 🎉 ETAP 1 W 100% ZAKOŃCZONY!
 
-Plan jest kompletny. Zaznacz checkboxy w miarę wykonywania zadań.
+**CHECKPOINT 1 osiągnięty** - **WSZYSTKIE zadania** (włącznie z opcjonalnym 1.3.3) zrealizowane!
 
-**Pytanie:** Od którego zadania chcesz zacząć?
+**Podsumowanie ETAP 1:**
+- ✅ Backend: Flashcards CRUD (4 zadania)
+- ✅ Frontend: Flashcards UI (4 zadania)
+- ✅ Backend: Generations READ API (2 zadania)
+- ✅ Frontend: Generations UI - widok /generations (1 zadanie - 251 LOC) 🆕
+- ✅ Frontend: Study Session (1 zadanie - ~326 LOC)
+- ✅ Frontend: Navigation (2 zadania + link History)
 
-Rekomendacja: **Zadanie 1.1.1** (GET /api/flashcards)
+**Razem:** 14/14 zadań (100%) - **WSZYSTKIE zadania** zakończone!
+
+**Łącznie zaimplementowane:**
+- **~951 LOC** w 18 plikach
+- 4 strony: /generate, /flashcards, /generations, /study
+- Kompletna nawigacja z 4 linkami
+- Backend API w 100% gotowe
+
+**Co dalej?**
+1. **Testowanie:** Uruchom `npm run dev` i przetestuj pełną aplikację
+   - Sprawdź nową stronę /generations
+   - Przetestuj link "History" w nawigacji
+2. **ETAP 2:** Implementacja UI autentykacji (login/register)
+3. **ETAP 3:** SSR + refaktor (prawdziwy auth, usunięcie DEFAULT_USER_ID)
 
 ---
 
@@ -755,4 +852,11 @@ Rekomendacja: **Zadanie 1.1.1** (GET /api/flashcards)
 | 2026-01-27 | Utworzenie planu MVP z podziałem na 3 etapy |
 | 2026-01-27 | Decyzja: SSR (Problemy 2 i 3) odłożone do ETAPU 3 |
 | 2026-01-27 | ✅ Ukończono zadania 1.1.1-1.1.4 (Flashcards CRUD Backend) |
+| 2026-01-27 | ✅ Ukończono zadania 1.2.1-1.2.4 (Flashcards Frontend) |
 | 2026-01-27 | Auth checks tymczasowo zakomentowane (zgodnie z filozofią ETAP 1) |
+| 2026-01-27 | ✅ Ukończono zadania 1.3.1-1.3.2 (Generations READ - backend API) |
+| 2026-01-28 | ✅ Ukończono zadanie 1.4.1 (Study Session - kompletny widok /study) |
+| 2026-01-28 | ✅ Ukończono zadania 1.5.1-1.5.2 (Navigation - responsive component) |
+| 2026-01-28 | 🎉 **CHECKPOINT 1 ZAKOŃCZONY** - wszystkie krytyczne zadania ETAP 1 zrealizowane |
+| 2026-01-28 | ✅ Ukończono zadanie 1.3.3 (Widok /generations UI) - 251 LOC w 6 plikach |
+| 2026-01-28 | 🎉 **ETAP 1 W 100% ZAKOŃCZONY** - wszystkie 14 zadań (włącznie z opcjonalnym) zrealizowane |

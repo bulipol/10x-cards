@@ -4,9 +4,98 @@ Wszystkie istotne zmiany w projekcie 10x-cards będą dokumentowane w tym pliku.
 
 Format oparty na [Keep a Changelog](https://keepachangelog.com/pl/1.1.0/).
 
+## [0.4.0] - 2026-01-28
+
+### Dodane
+
+- **Widok historii generacji** (`/generations`):
+  - Lista wszystkich generacji użytkownika z paginacją (10 na stronę)
+  - Wyświetlanie statystyk: data utworzenia, liczba fiszek, czas generacji
+  - Loading state, error state, empty state
+  - Responsive design
+
+- **Widok szczegółów generacji** (`/generations/[id]`):
+  - Szczegóły pojedynczej generacji
+  - Lista wszystkich fiszek z danej generacji
+  - Linki do edycji fiszek
+
+- **Sesja nauki** (`/study`):
+  - Interaktywna sesja nauki z fiszkami
+  - Nawigacja między fiszkami (poprzednia/następna)
+  - Postęp sesji nauki
+  - Responsive design
+
+- **Komponent nawigacji** (`Navigation.tsx`):
+  - Responsive menu z hamburgerem (mobile)
+  - Linki do: Generate, My Flashcards, Study Session, History
+  - Zintegrowany w Layout.astro
+
+- **React Hooks** (src/components/hooks/):
+  - `useGenerations.ts` - zarządzanie listą generacji z paginacją
+  - `useGeneration.ts` - zarządzanie szczegółami pojedynczej generacji
+  - `useStudySession.ts` - zarządzanie sesją nauki
+
+- **Komponenty React** (src/components/):
+  - `GenerationsView.tsx` - główny orchestrator widoku generacji
+  - `GenerationsList.tsx` - lista generacji
+  - `GenerationCard.tsx` - karta pojedynczej generacji
+  - `GenerationDetailView.tsx` - widok szczegółów generacji
+  - `StudySessionView.tsx` - główny orchestrator sesji nauki
+  - `StudyCard.tsx` - karta fiszki w sesji nauki
+  - `StudySessionProgress.tsx` - pasek postępu sesji
+
+- **UI Components shadcn/ui**:
+  - Badge - dla wyświetlania statusów i etykiet
+  - Card - dla kart generacji i fiszek
+
+- **API Endpoints** (src/pages/api/generations/):
+  - `GET /api/generations` - lista generacji z paginacją (refaktoryzacja)
+  - `GET /api/generations/[id]` - szczegóły generacji + fiszki
+
+- **GenerationService rozszerzony** (src/lib/generation.service.ts):
+  - `getAll()` - pobieranie listy generacji z paginacją
+  - `getById()` - pobieranie szczegółów generacji z fiszkami
+  - Obsługa błędów bazy danych (DatabaseError)
+
+- **Walidacja Zod** (src/lib/schemas/):
+  - `generations.schema.ts` - schematy dla query params i ID generacji
+
+- **Typy TypeScript** (src/types.ts):
+  - `GenerationDto` - DTO dla pojedynczej generacji w liście
+  - `GenerationDetailDto` - DTO dla szczegółów generacji z fiszkami
+  - `GenerationsListResponseDto` - response z paginacją
+
+- **Strony Astro**:
+  - `generations.astro` - strona historii generacji
+  - `generations/[id].astro` - strona szczegółów generacji
+  - `study.astro` - strona sesji nauki
+
+### Zmienione
+
+- `src/layouts/Layout.astro` - dodano komponent Navigation
+- `src/lib/generation.service.ts` - dodano metody getAll() i getById()
+- `src/lib/flashcard.service.ts` - rozszerzenia
+- `src/types.ts` - dodano nowe typy DTO
+
+### Usunięte
+
+- `src/pages/api/generations.ts` - przeniesiono do `generations/` (refaktoryzacja)
+
+### Szczegóły techniczne
+
+- **Łącznie:** ~500+ linii kodu (komponenty, hooki, strony)
+- **Toast notifications** z sonner dla operacji
+- **Loading states:** skeleton loaders i spinners
+- **Error handling:** try/catch z re-throw dla wszystkich API calls
+- **Responsive design:** mobile-first approach
+- **Type safety:** pełna typizacja TypeScript z DTO
+
+---
+
 ## [0.3.0] - 2026-01-27
 
 ### Dodane
+
 - **Widok zarządzania fiszkami** (`/flashcards`):
   - Pełny CRUD: tworzenie, edycja, usuwanie fiszek
   - Paginacja (10 fiszek na stronę)
@@ -53,6 +142,7 @@ Format oparty na [Keep a Changelog](https://keepachangelog.com/pl/1.1.0/).
   - `flashcards-view-implementation-progress.md` - szczegółowy tracking implementacji przez 6 iteracji
 
 ### Zmienione
+
 - `package.json`:
   - Wersja 0.2.0 → 0.3.0
   - Dodano @radix-ui/react-dialog@^1.1.15
@@ -61,12 +151,14 @@ Format oparty na [Keep a Changelog](https://keepachangelog.com/pl/1.1.0/).
 - `astro.config.mjs`: Aktualizacja konfiguracji
 
 ### Usunięte
+
 - **Legacy planning documents** z `.ai/` (16 plików):
   - Przeniesiono do `.ai/implementation/` dla archiwum
   - Utworzono `.ai/coreDocumentation/` dla aktywnej dokumentacji
   - Usunięto zduplikowane plany (Claude vs Cursor)
 
 ### Szczegóły techniczne
+
 - **Łącznie:** ~620 linii kodu (bez UI libraries)
 - **Toast notifications** z sonner dla wszystkich operacji CRUD
 - **Smart pagination:** automatyczne przejście do poprzedniej strony przy usunięciu ostatniego elementu
@@ -80,6 +172,7 @@ Format oparty na [Keep a Changelog](https://keepachangelog.com/pl/1.1.0/).
 ## [0.2.0] - 2026-01-26
 
 ### Dodane
+
 - **Plany implementacji API** (.ai/):
   - Plan implementacji endpointów autentykacji (`auth-endpoint-implementation-plan.md`)
     - 6 endpointów: register, login, logout, reset-password, update-password, DELETE account
@@ -95,6 +188,7 @@ Format oparty na [Keep a Changelog](https://keepachangelog.com/pl/1.1.0/).
   - Status: WSZYSTKIE PLANY KOMPLETNE
 
 ### Szczegóły techniczne
+
 - Wszystkie plany zgodne z istniejącymi wzorcami projektu
 - Uwzględniono bezpieczeństwo, walidację, obsługę błędów
 - Scenariusze testów manualnych dla każdego endpointu
@@ -104,6 +198,7 @@ Format oparty na [Keep a Changelog](https://keepachangelog.com/pl/1.1.0/).
 ## [0.1.0] - 2026-01-26
 
 ### Dodane
+
 - **Dokumentacja AI** (.ai/):
   - Specyfikacja architektury modułu autentykacji (`auth-spec.md`)
   - Plany implementacji widoku fiszek (wersje Claude i Cursor)
@@ -133,6 +228,7 @@ Format oparty na [Keep a Changelog](https://keepachangelog.com/pl/1.1.0/).
   - Szczegółowa analiza implementacji vs plany (`analizaWorkDone.md`)
 
 ### Zmienione
+
 - `src/middleware/index.ts`: Dodano komentarz przygotowujący do implementacji PUBLIC_PATHS dla autentykacji
 
 ---
@@ -140,6 +236,7 @@ Format oparty na [Keep a Changelog](https://keepachangelog.com/pl/1.1.0/).
 ## [0.0.1] - 2026-01-24 (Initial Commit)
 
 ### Dodane
+
 - Podstawowa struktura projektu Astro 5 + React 19
 - Integracja z Supabase (PostgreSQL)
 - Integracja z OpenRouter (GPT-4o-mini)

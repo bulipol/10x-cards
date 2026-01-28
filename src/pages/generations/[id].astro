@@ -1,0 +1,17 @@
+---
+import Layout from "@/layouts/Layout.astro";
+import { GenerationDetailView } from "@/components/GenerationDetailView";
+
+const { id } = Astro.params;
+const generationId = id ? parseInt(id, 10) : null;
+
+if (!generationId || isNaN(generationId)) {
+  return Astro.redirect("/generations");
+}
+---
+
+<Layout title="Generation Details - 10xCards">
+  <div class="container mx-auto px-4 py-8">
+    <GenerationDetailView generationId={generationId} client:load />
+  </div>
+</Layout>
