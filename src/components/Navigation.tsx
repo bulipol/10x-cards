@@ -1,10 +1,15 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Menu, X } from "lucide-react";
+import { UserMenu } from "./auth/UserMenu";
 
 interface NavLink {
   href: string;
   label: string;
+}
+
+interface NavigationProps {
+  user: { email: string } | null;
 }
 
 const navLinks: NavLink[] = [
@@ -14,7 +19,7 @@ const navLinks: NavLink[] = [
   { href: "/generations", label: "History" },
 ];
 
-export function Navigation() {
+export function Navigation({ user }: NavigationProps) {
   const [isOpen, setIsOpen] = useState(false);
 
   return (
@@ -41,9 +46,18 @@ export function Navigation() {
 
           {/* Desktop Actions */}
           <div className="hidden md:flex items-center">
-            <Button variant="ghost" disabled className="cursor-not-allowed opacity-50">
-              Logout
-            </Button>
+            {user ? (
+              <UserMenu userEmail={user.email} />
+            ) : (
+              <div className="flex items-center gap-2">
+                <Button variant="ghost" asChild>
+                  <a href="/login">Login</a>
+                </Button>
+                <Button asChild>
+                  <a href="/register">Register</a>
+                </Button>
+              </div>
+            )}
           </div>
 
           {/* Mobile Menu Button */}
@@ -71,9 +85,18 @@ export function Navigation() {
               </a>
             ))}
             <div className="px-4 pt-2">
-              <Button variant="ghost" disabled className="w-full cursor-not-allowed opacity-50">
-                Logout
-              </Button>
+              {user ? (
+                <UserMenu userEmail={user.email} />
+              ) : (
+                <div className="flex flex-col gap-2">
+                  <Button variant="ghost" asChild className="w-full">
+                    <a href="/login">Login</a>
+                  </Button>
+                  <Button asChild className="w-full">
+                    <a href="/register">Register</a>
+                  </Button>
+                </div>
+              )}
             </div>
           </div>
         )}

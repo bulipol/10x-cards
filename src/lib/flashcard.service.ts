@@ -148,16 +148,18 @@ export class FlashcardService {
 
   /**
    * Retrieves flashcards with pagination, sorting, and filtering
+   * @param userId - The ID of the user whose flashcards to retrieve
    * @param params - Query parameters for pagination, sorting, and filtering
    * @returns Object with flashcards data and total count
    * @throws {DatabaseError} When database operation fails
    */
-  async getFlashcards(params: FlashcardsQueryParams): Promise<{ data: FlashcardDto[]; total: number }> {
+  async getFlashcards(userId: string, params: FlashcardsQueryParams): Promise<{ data: FlashcardDto[]; total: number }> {
     const offset = (params.page - 1) * params.limit;
 
     let query = this.supabase
       .from("flashcards")
-      .select("id, front, back, source, generation_id, created_at, updated_at", { count: "exact" });
+      .select("id, front, back, source, generation_id, created_at, updated_at", { count: "exact" })
+      .eq("user_id", userId);
 
     // Apply filters
     if (params.source) {
@@ -188,14 +190,16 @@ export class FlashcardService {
 
   /**
    * Retrieves a single flashcard by ID
+   * @param userId - The ID of the user who owns the flashcard
    * @param id - The flashcard ID
    * @returns Flashcard data or null if not found
    * @throws {DatabaseError} When database operation fails
    */
-  async getFlashcardById(id: number): Promise<FlashcardDto | null> {
+  async getFlashcardById(userId: string, id: number): Promise<FlashcardDto | null> {
     const { data, error } = await this.supabase
       .from("flashcards")
       .select("id, front, back, source, generation_id, created_at, updated_at")
+      .eq("user_id", userId)
       .eq("id", id)
       .single();
 
@@ -211,15 +215,17 @@ export class FlashcardService {
 
   /**
    * Updates an existing flashcard with partial data
+   * @param userId - The ID of the user who owns the flashcard
    * @param id - The flashcard ID
    * @param updateData - Partial flashcard data to update
    * @returns Updated flashcard or null if not found
    * @throws {DatabaseError} When database operation fails
    */
-  async updateFlashcard(id: number, updateData: FlashcardUpdateDto): Promise<FlashcardDto | null> {
+  async updateFlashcard(userId: string, id: number, updateData: FlashcardUpdateDto): Promise<FlashcardDto | null> {
     const { data, error } = await this.supabase
       .from("flashcards")
       .update(updateData)
+      .eq("user_id", userId)
       .eq("id", id)
       .select("id, front, back, source, generation_id, created_at, updated_at")
       .single();
@@ -236,12 +242,17 @@ export class FlashcardService {
 
   /**
    * Deletes a flashcard by ID
+   * @param userId - The ID of the user who owns the flashcard
    * @param id - The flashcard ID
    * @returns True if flashcard was deleted, false if not found
    * @throws {DatabaseError} When database operation fails
    */
-  async deleteFlashcard(id: number): Promise<boolean> {
-    const { error, count } = await this.supabase.from("flashcards").delete({ count: "exact" }).eq("id", id);
+  async deleteFlashcard(userId: string, id: number): Promise<boolean> {
+    const { error, count } = await this.supabase
+      .from("flashcards")
+      .delete({ count: "exact" })
+      .eq("user_id", userId)
+      .eq("id", id);
 
     if (error) {
       throw new DatabaseError("Failed to delete flashcard", error.code || "UNKNOWN", error.message);

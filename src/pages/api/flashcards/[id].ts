@@ -6,17 +6,13 @@ export const prerender = false;
 
 export const GET: APIRoute = async ({ locals, params }) => {
   try {
-    // TODO: ETAP 3 - Odkomentować auth check
-    // const {
-    //   data: { user },
-    //   error: authError,
-    // } = await locals.supabase.auth.getUser();
-    // if (authError || !user) {
-    //   return new Response(JSON.stringify({ error: "Unauthorized" }), {
-    //     status: 401,
-    //     headers: { "Content-Type": "application/json" },
-    //   });
-    // }
+    const { user } = locals;
+    if (!user) {
+      return new Response(JSON.stringify({ error: "Unauthorized" }), {
+        status: 401,
+        headers: { "Content-Type": "application/json" },
+      });
+    }
 
     // Validate ID param
     const validationResult = flashcardIdSchema.safeParse({ id: params.id });
@@ -35,7 +31,7 @@ export const GET: APIRoute = async ({ locals, params }) => {
 
     // Get flashcard by ID
     const flashcardService = new FlashcardService(locals.supabase);
-    const flashcard = await flashcardService.getFlashcardById(validationResult.data.id);
+    const flashcard = await flashcardService.getFlashcardById(user.id, validationResult.data.id);
 
     if (!flashcard) {
       return new Response(JSON.stringify({ error: "Flashcard not found" }), {
@@ -73,17 +69,13 @@ export const GET: APIRoute = async ({ locals, params }) => {
 
 export const PUT: APIRoute = async ({ locals, params, request }) => {
   try {
-    // TODO: ETAP 3 - Odkomentować auth check
-    // const {
-    //   data: { user },
-    //   error: authError,
-    // } = await locals.supabase.auth.getUser();
-    // if (authError || !user) {
-    //   return new Response(JSON.stringify({ error: "Unauthorized" }), {
-    //     status: 401,
-    //     headers: { "Content-Type": "application/json" },
-    //   });
-    // }
+    const { user } = locals;
+    if (!user) {
+      return new Response(JSON.stringify({ error: "Unauthorized" }), {
+        status: 401,
+        headers: { "Content-Type": "application/json" },
+      });
+    }
 
     // Validate ID param
     const idValidation = flashcardIdSchema.safeParse({ id: params.id });
@@ -118,7 +110,7 @@ export const PUT: APIRoute = async ({ locals, params, request }) => {
 
     // Update flashcard
     const flashcardService = new FlashcardService(locals.supabase);
-    const updatedFlashcard = await flashcardService.updateFlashcard(idValidation.data.id, bodyValidation.data);
+    const updatedFlashcard = await flashcardService.updateFlashcard(user.id, idValidation.data.id, bodyValidation.data);
 
     if (!updatedFlashcard) {
       return new Response(JSON.stringify({ error: "Flashcard not found" }), {
@@ -156,17 +148,13 @@ export const PUT: APIRoute = async ({ locals, params, request }) => {
 
 export const DELETE: APIRoute = async ({ locals, params }) => {
   try {
-    // TODO: ETAP 3 - Odkomentować auth check
-    // const {
-    //   data: { user },
-    //   error: authError,
-    // } = await locals.supabase.auth.getUser();
-    // if (authError || !user) {
-    //   return new Response(JSON.stringify({ error: "Unauthorized" }), {
-    //     status: 401,
-    //     headers: { "Content-Type": "application/json" },
-    //   });
-    // }
+    const { user } = locals;
+    if (!user) {
+      return new Response(JSON.stringify({ error: "Unauthorized" }), {
+        status: 401,
+        headers: { "Content-Type": "application/json" },
+      });
+    }
 
     // Validate ID param
     const validationResult = flashcardIdSchema.safeParse({ id: params.id });
@@ -185,7 +173,7 @@ export const DELETE: APIRoute = async ({ locals, params }) => {
 
     // Delete flashcard
     const flashcardService = new FlashcardService(locals.supabase);
-    const deleted = await flashcardService.deleteFlashcard(validationResult.data.id);
+    const deleted = await flashcardService.deleteFlashcard(user.id, validationResult.data.id);
 
     if (!deleted) {
       return new Response(JSON.stringify({ error: "Flashcard not found" }), {

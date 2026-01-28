@@ -8,6 +8,7 @@ interface Props {
 }
 
 const { title = "10xCards" } = Astro.props;
+const user = Astro.locals.user;
 ---
 
 <!doctype html>
@@ -20,7 +21,7 @@ const { title = "10xCards" } = Astro.props;
     <title>{title}</title>
   </head>
   <body>
-    <Navigation client:load />
+    <Navigation user={user} client:load />
     <slot />
     <Toaster richColors closeButton client:only="react" />
   </body>

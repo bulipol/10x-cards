@@ -158,3 +158,28 @@ export interface FlashcardsQueryParams {
   source?: Source;
   generation_id?: number;
 }
+
+// ==========================================
+// 14. AUTH TYPES (ETAP 2)
+// ==========================================
+
+export interface User {
+  id: string;
+  email: string;
+  created_at?: string;
+}
+
+export interface AuthState {
+  user: User | null;
+  isLoading: boolean;
+  error: string | null;
+}
+
+export type AuthErrorCode =
+  | "validation_error"
+  | "invalid_credentials"
+  | "email_taken"
+  | "invalid_token"
+  | "expired_token"
+  | "rate_limit"
+  | "server_error";
