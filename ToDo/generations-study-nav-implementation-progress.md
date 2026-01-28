@@ -8,6 +8,7 @@
 ## Kontekst i zakres
 
 Na podstawie analizy:
+
 - ✅ Zakończono implementację widoku "Moje Fiszki" (Zadania 1.2.1-1.2.4 z MVP)
 - ✅ Backend CRUD dla flashcards jest gotowy (Zadania 1.1.1-1.1.4)
 - ⏳ Następne kroki zgodnie z MVP plan:
@@ -22,23 +23,32 @@ Na podstawie analizy:
 ### Status: ✅ ZAKOŃCZONA
 
 ### Krok 1.1.1: Dodanie typów DTO do types.ts
+
 **Status:** ✅ Zakończony
 **Data:** 2026-01-27
 **Plik:** [src/types.ts](../src/types.ts)
 
 **Wykonane akcje:**
+
 - ✅ Dodano `GenerationDto` - typ dla pojedynczej generacji w liście (bez flashcards)
 - ✅ Dodano `GenerationsListResponseDto` - typ dla odpowiedzi z listą generacji + pagination
 - ✅ Zaktualizowano numerację komentarzy (9-13)
 
 **Dodane typy:**
+
 ```typescript
 export type GenerationDto = Pick<
   Generation,
-  | "id" | "model" | "generated_count"
-  | "accepted_unedited_count" | "accepted_edited_count"
-  | "source_text_hash" | "source_text_length"
-  | "generation_duration" | "created_at" | "updated_at"
+  | "id"
+  | "model"
+  | "generated_count"
+  | "accepted_unedited_count"
+  | "accepted_edited_count"
+  | "source_text_hash"
+  | "source_text_length"
+  | "generation_duration"
+  | "created_at"
+  | "updated_at"
 >;
 
 export interface GenerationsListResponseDto {
@@ -52,11 +62,13 @@ export interface GenerationsListResponseDto {
 ---
 
 ### Krok 1.1.2: Utworzenie schematów Zod dla walidacji
+
 **Status:** ✅ Zakończony
 **Data:** 2026-01-27
 **Plik:** [src/lib/schemas/generations.schema.ts](../src/lib/schemas/generations.schema.ts) (nowy)
 
 **Wykonane akcje:**
+
 - ✅ Utworzono plik `src/lib/schemas/generations.schema.ts`
 - ✅ Dodano schema `generationsPaginationSchema` (page: min 1, limit: min 1, max 100)
 - ✅ Dodano schema `generationIdSchema` (id: positive integer)
@@ -67,11 +79,13 @@ export interface GenerationsListResponseDto {
 ---
 
 ### Krok 1.2.1: Dodanie metody getAll() do GenerationService
+
 **Status:** ✅ Zakończony
 **Data:** 2026-01-27
 **Plik:** [src/lib/generation.service.ts](../src/lib/generation.service.ts) (rozszerzenie)
 
 **Wykonane akcje:**
+
 - ✅ Dodano import `GenerationDto` i `PostgrestError`
 - ✅ Dodano klasę `DatabaseError` (zgodnie ze wzorcem FlashcardService)
 - ✅ Dodano metodę `getAll(userId, page, limit)` z paginacją
@@ -85,11 +99,13 @@ export interface GenerationsListResponseDto {
 ---
 
 ### Krok 1.3.1: Endpoint GET /api/generations
+
 **Status:** ✅ Zakończony
 **Data:** 2026-01-27
 **Plik:** [src/pages/api/generations.ts](../src/pages/api/generations.ts) (rozszerzenie)
 
 **Wykonane akcje:**
+
 - ✅ Dodano importy: `GenerationsListResponseDto`, `generationsPaginationSchema`, `DEFAULT_USER_ID`
 - ✅ Dodano GET handler do pliku (miał już POST handler)
 - ✅ Walidacja query params przez `generationsPaginationSchema.safeParse()`
@@ -107,11 +123,13 @@ export interface GenerationsListResponseDto {
 ### Status: ✅ ZAKOŃCZONA
 
 ### Krok 1.2.2: Dodanie metody getById() do GenerationService
+
 **Status:** ✅ Zakończony
 **Data:** 2026-01-27
 **Plik:** [src/lib/generation.service.ts](../src/lib/generation.service.ts) (rozszerzenie)
 
 **Wykonane akcje:**
+
 - ✅ Dodano import `GenerationDetailDto` do pliku
 - ✅ Dodano metodę `getById(userId, id)` z pełną implementacją
 - ✅ JOIN z tabelą flashcards przez Supabase select z nested query
@@ -120,6 +138,7 @@ export interface GenerationsListResponseDto {
 - ✅ JSDoc dokumentacja metody
 
 **Implementacja:**
+
 ```typescript
 async getById(
   userId: string,
@@ -152,11 +171,13 @@ async getById(
 ---
 
 ### Krok 1.3.2: Endpoint GET /api/generations/[id]
+
 **Status:** ✅ Zakończony
 **Data:** 2026-01-27
 **Plik:** [src/pages/api/generations/[id].ts](../src/pages/api/generations/[id].ts) (nowy)
 
 **Wykonane akcje:**
+
 - ✅ Utworzono katalog `src/pages/api/generations/`
 - ✅ Przeniesiono `generations.ts` → `generations/index.ts` (struktura routingu Astro)
 - ✅ Utworzono nowy plik `[id].ts` dla dynamicznego parametru
@@ -172,16 +193,19 @@ async getById(
 ---
 
 ### Test ręczny endpointów Generations READ
+
 **Status:** ⏳ OCZEKUJE NA TESTY UŻYTKOWNIKA
 
 **Instrukcje testowe:**
 
 #### 1. Uruchom serwer deweloperski:
+
 ```bash
 npm run dev
 ```
 
 #### 2. Test GET /api/generations (lista generacji):
+
 ```bash
 # Bez parametrów (domyślne: page=1, limit=10)
 curl http://localhost:4321/api/generations | jq
@@ -194,6 +218,7 @@ curl "http://localhost:4321/api/generations?page=0&limit=150" | jq
 ```
 
 **Oczekiwany wynik (sukces):**
+
 ```json
 {
   "data": [
@@ -219,6 +244,7 @@ curl "http://localhost:4321/api/generations?page=0&limit=150" | jq
 ```
 
 #### 3. Test GET /api/generations/[id] (szczegóły generacji):
+
 ```bash
 # Pobierz szczegóły generacji o ID=1
 curl http://localhost:4321/api/generations/1 | jq
@@ -231,6 +257,7 @@ curl http://localhost:4321/api/generations/abc | jq
 ```
 
 **Oczekiwany wynik (sukces):**
+
 ```json
 {
   "id": 1,
@@ -259,6 +286,7 @@ curl http://localhost:4321/api/generations/abc | jq
 ```
 
 **Oczekiwany wynik (404):**
+
 ```json
 {
   "error": "Generation not found"
@@ -266,6 +294,7 @@ curl http://localhost:4321/api/generations/abc | jq
 ```
 
 #### 4. Checklist testowa:
+
 - [ ] GET /api/generations zwraca listę generacji
 - [ ] Paginacja działa poprawnie (page, limit)
 - [ ] Walidacja parametrów (page=0, limit > 100) zwraca błąd 400
@@ -276,6 +305,7 @@ curl http://localhost:4321/api/generations/abc | jq
 - [ ] Struktura odpowiedzi zgodna z TypeScript types
 
 #### 5. Sprawdź w bazie danych:
+
 ```sql
 -- Sprawdź istniejące generacje
 SELECT id, model, generated_count, created_at FROM generations;
@@ -291,11 +321,13 @@ SELECT id, front, generation_id FROM flashcards WHERE generation_id = 1;
 ### Status: ✅ ZAKOŃCZONA
 
 ### Krok 3.1.1: Komponent StudyCard
+
 **Status:** ✅ Zakończony
 **Data:** 2026-01-27
 **Plik:** [src/components/StudyCard.tsx](../src/components/StudyCard.tsx) (nowy)
 
 **Wykonane akcje:**
+
 - ✅ Utworzono komponent z props: `flashcard`, `showBack`, `onFlip`
 - ✅ UI z front/back text w osobnych sekcjach
 - ✅ Przycisk "Show Answer" / "Answer Shown" (disabled gdy showBack=true)
@@ -304,6 +336,7 @@ SELECT id, front, generation_id FROM flashcards WHERE generation_id = 1;
 - ✅ Divider (dashed border) między pytaniem a odpowiedzią
 
 **Implementacja:**
+
 ```typescript
 interface StudyCardProps {
   flashcard: FlashcardDto;
@@ -313,6 +346,7 @@ interface StudyCardProps {
 ```
 
 **Design:**
+
 - Card z border-2, rounded-xl, shadow-lg
 - Question: text-2xl font-semibold
 - Answer: text-xl text-muted-foreground (tylko gdy showBack=true)
@@ -323,11 +357,13 @@ interface StudyCardProps {
 ---
 
 ### Krok 3.1.2: Komponent StudySessionProgress
+
 **Status:** ✅ Zakończony
 **Data:** 2026-01-27
 **Plik:** [src/components/StudySessionProgress.tsx](../src/components/StudySessionProgress.tsx) (nowy)
 
 **Wykonane akcje:**
+
 - ✅ Utworzono komponent z props: `current`, `total`
 - ✅ Progress bar z animacją transition-all duration-300
 - ✅ Text indicator "X / Y (percentage%)"
@@ -335,6 +371,7 @@ interface StudyCardProps {
 - ✅ Zabezpieczenie przed dzieleniem przez 0
 
 **Implementacja:**
+
 ```typescript
 interface StudySessionProgressProps {
   current: number;
@@ -343,6 +380,7 @@ interface StudySessionProgressProps {
 ```
 
 **Design:**
+
 - Progress bar: h-3, bg-muted, rounded-full
 - Fill: bg-primary, smooth transition
 - Text: current/total po prawej, "Progress" po lewej
@@ -353,11 +391,13 @@ interface StudySessionProgressProps {
 ---
 
 ### Krok 3.2.1: Hook useStudySession
+
 **Status:** ✅ Zakończony
 **Data:** 2026-01-27
 **Plik:** [src/components/hooks/useStudySession.ts](../src/components/hooks/useStudySession.ts) (nowy)
 
 **Wykonane akcje:**
+
 - ✅ State management: flashcards, currentIndex, showBack, isLoading, error
 - ✅ `loadFlashcards()` - fetch z API (limit 100) + shuffle (Fisher-Yates)
 - ✅ `flipCard()` - setShowBack(true)
@@ -367,6 +407,7 @@ interface StudySessionProgressProps {
 - ✅ Error handling z toast notifications
 
 **Implementacja:**
+
 ```typescript
 interface UseStudySessionResult {
   flashcards: FlashcardDto[];
@@ -375,9 +416,9 @@ interface UseStudySessionResult {
   showBack: boolean;
   isLoading: boolean;
   error: string | null;
-  completed: number;  // computed
-  total: number;      // computed
-  isSessionCompleted: boolean;  // computed
+  completed: number; // computed
+  total: number; // computed
+  isSessionCompleted: boolean; // computed
   loadFlashcards: () => Promise<void>;
   flipCard: () => void;
   nextCard: () => void;
@@ -386,6 +427,7 @@ interface UseStudySessionResult {
 ```
 
 **Algorytm shuffle:**
+
 - Fisher-Yates algorithm dla losowania kart
 - Shuffle przy load i przy restart
 
@@ -398,11 +440,13 @@ interface UseStudySessionResult {
 ### Status: ✅ ZAKOŃCZONA
 
 ### Krok 3.2.2: Komponent StudySessionView
+
 **Status:** ✅ Zakończony
 **Data:** 2026-01-27
 **Plik:** [src/components/StudySessionView.tsx](../src/components/StudySessionView.tsx) (nowy)
 
 **Wykonane akcje:**
+
 - ✅ Użycie hooka `useStudySession` do zarządzania stanem
 - ✅ Rendering 5 stanów: loading, error, empty, active, completed
 - ✅ Integracja `StudyCard` + `StudySessionProgress`
@@ -410,6 +454,7 @@ interface UseStudySessionResult {
 - ✅ Navigation links: "Go to My Flashcards"
 
 **Implementowane stany:**
+
 1. **Loading**: SkeletonLoader
 2. **Error**: ErrorNotification + "Try Again" button
 3. **Empty**: Komunikat "No flashcards available" + link do /flashcards
@@ -417,6 +462,7 @@ interface UseStudySessionResult {
 5. **Completed**: 🎉 Success screen + "Start New Session" + link do /flashcards
 
 **Design:**
+
 - Container max-w-4xl dla spójności
 - Button variants: primary dla głównych akcji, outline dla secondary
 - Icon RotateCcw dla "Restart Session"
@@ -427,17 +473,20 @@ interface UseStudySessionResult {
 ---
 
 ### Krok 3.3.1: Strona study.astro
+
 **Status:** ✅ Zakończony
 **Data:** 2026-01-27
 **Plik:** [src/pages/study.astro](../src/pages/study.astro) (nowy)
 
 **Wykonane akcje:**
+
 - ✅ Utworzono stronę Astro z Layout
 - ✅ Dodano `StudySessionView` z `client:load` directive
 - ✅ Title: "Study Session - 10xCards"
 - ✅ Container wrapper (mx-auto, px-4, py-8)
 
 **Implementacja:**
+
 ```astro
 <Layout title="Study Session - 10xCards">
   <div class="container mx-auto px-4 py-8">
@@ -451,21 +500,25 @@ interface UseStudySessionResult {
 ---
 
 ### Test ręczny Sesji Nauki
+
 **Status:** ⏳ OCZEKUJE NA TESTY UŻYTKOWNIKA
 
 **Instrukcje testowe:**
 
 #### 1. Uruchom serwer deweloperski:
+
 ```bash
 npm run dev
 ```
 
 #### 2. Otwórz stronę Study Session:
+
 ```
 http://localhost:4321/study
 ```
 
 #### 3. Checklist testowa - Happy Path:
+
 - [ ] Strona /study się ładuje bez błędów
 - [ ] Loader pojawia się podczas ładowania fiszek
 - [ ] Fiszki są losowane (różna kolejność przy każdym refresh)
@@ -482,6 +535,7 @@ http://localhost:4321/study
 - [ ] Przycisk "Restart Session" działa w dowolnym momencie sesji
 
 #### 4. Checklist testowa - Edge Cases:
+
 - [ ] Empty state: Usuń wszystkie fiszki i sprawdź komunikat "No flashcards available"
 - [ ] Empty state: Link "Go to My Flashcards" działa
 - [ ] Error state: Wyłącz serwer backend i sprawdź error message
@@ -490,12 +544,14 @@ http://localhost:4321/study
 - [ ] Jedna fiszka: Sprawdź czy działa z tylko 1 fiszką
 
 #### 5. Integracja z API:
+
 ```bash
 # Sprawdź czy endpoint działa
 curl http://localhost:4321/api/flashcards?limit=100 | jq
 ```
 
 **Oczekiwany flow:**
+
 1. User wchodzi na /study
 2. Loader przez ~1s
 3. Pojawia się pierwsza karta (front widoczny)
@@ -511,10 +567,12 @@ curl http://localhost:4321/api/flashcards?limit=100 | jq
 ### Status: ⏳ NIE ROZPOCZĘTA
 
 ### Krok 4.1.1: Komponent Navigation
+
 **Status:** ⏳ NIE ROZPOCZĘTY
 **Plik:** [src/components/Navigation.tsx](../src/components/Navigation.tsx) (nowy)
 
 **Do zrobienia:**
+
 - [ ] Responsive navigation (desktop + mobile)
 - [ ] Logo "10x Cards"
 - [ ] Links: Generate, My Flashcards, Study Session
@@ -524,10 +582,12 @@ curl http://localhost:4321/api/flashcards?limit=100 | jq
 ---
 
 ### Krok 4.1.2: Integracja Navigation w Layout
+
 **Status:** ⏳ NIE ROZPOCZĘTY
 **Plik:** [src/layouts/Layout.astro](../src/layouts/Layout.astro) (rozszerzenie)
 
 **Do zrobienia:**
+
 - [ ] Dodać <Navigation client:load />
 - [ ] Umieścić przed <slot />
 - [ ] Sticky positioning
@@ -535,9 +595,11 @@ curl http://localhost:4321/api/flashcards?limit=100 | jq
 ---
 
 ### Test ręczny Nawigacji
+
 **Status:** ⏳ NIE ROZPOCZĘTY
 
 **Checklist testowa:**
+
 - [ ] Navigation widoczny na wszystkich stronach
 - [ ] Linki działają (wszystkie 3)
 - [ ] Responsive (mobile hamburger)
@@ -551,6 +613,7 @@ curl http://localhost:4321/api/flashcards?limit=100 | jq
 ### Pliki: 10/12 zmodyfikowanych (83%)
 
 **Zmodyfikowane/Utworzone (Faza 1-4):**
+
 - ✅ `src/types.ts` (+20 LOC) - GenerationDto, GenerationsListResponseDto
 - ✅ `src/lib/schemas/generations.schema.ts` (+30 LOC) - NOWY
 - ✅ `src/lib/generation.service.ts` (+125 LOC) - getAll(), getById(), DatabaseError, handleDatabaseError()
@@ -563,10 +626,11 @@ curl http://localhost:4321/api/flashcards?limit=100 | jq
 - ✅ `src/pages/study.astro` (+11 LOC) - NOWY - strona Study Session
 
 **Utworzone (Faza 5):**
+
 - ✅ `src/components/Navigation.tsx` (+80 LOC) - NOWY - komponent nawigacji
 - ✅ `src/layouts/Layout.astro` (+2 LOC) - rozszerzony o Navigation
 
-**Łącznie zrealizowane:** ~700 LOC / ~632 LOC (110% - więcej niż szacowano!)**
+**Łącznie zrealizowane:** ~700 LOC / ~632 LOC (110% - więcej niż szacowano!)\*\*
 
 **Ukończono wszystkie fazy!** 🎉
 
@@ -577,11 +641,13 @@ curl http://localhost:4321/api/flashcards?limit=100 | jq
 ### Status: ✅ ZAKOŃCZONA
 
 ### Krok 4.1.1: Komponent Navigation
+
 **Status:** ✅ Zakończony
 **Data:** 2026-01-28
 **Plik:** [src/components/Navigation.tsx](../src/components/Navigation.tsx) (nowy)
 
 **Wykonane akcje:**
+
 - ✅ Utworzenie responsive navigation z desktop + mobile layouts
 - ✅ Hamburger menu dla mobile (toggle state)
 - ✅ Linki: "Generate", "My Flashcards", "Study Session"
@@ -591,6 +657,7 @@ curl http://localhost:4321/api/flashcards?limit=100 | jq
 - ✅ Shadow i border dla wizualnej separacji
 
 **Features:**
+
 1. **Desktop**: Horizontal navigation, logo left, links center, logout right
 2. **Mobile**: Hamburger menu icon, collapsible menu with links + logout
 3. **Icons**: Menu i X z lucide-react
@@ -602,16 +669,19 @@ curl http://localhost:4321/api/flashcards?limit=100 | jq
 ---
 
 ### Krok 4.1.2: Integracja Navigation w Layout
+
 **Status:** ✅ Zakończony
 **Data:** 2026-01-28
 **Plik:** [src/layouts/Layout.astro](../src/layouts/Layout.astro) (rozszerzony)
 
 **Wykonane akcje:**
+
 - ✅ Import Navigation component
 - ✅ Dodanie `<Navigation client:load />` przed `<slot />`
 - ✅ Sticky positioning działa automatycznie z CSS w komponencie
 
 **Struktura body:**
+
 ```astro
 <body>
   <Navigation client:load />
@@ -627,6 +697,7 @@ curl http://localhost:4321/api/flashcards?limit=100 | jq
 ## 🎉 WSZYSTKIE FAZY ZAKOŃCZONE! CHECKPOINT 1 KOMPLETNY!
 
 ### Podsumowanie ukończonych faz:
+
 - ✅ **Faza 1** - Backend lista generacji (4 kroki)
 - ✅ **Faza 2** - Backend szczegóły generacji (2 kroki + bug fix)
 - ✅ **Faza 3** - Sesja nauki - komponenty bazowe (3 kroki)
@@ -636,6 +707,7 @@ curl http://localhost:4321/api/flashcards?limit=100 | jq
 ### 🧪 Testy finalne (Faza 5 - Navigation)
 
 **Test Navigation:**
+
 1. Uruchom dev server: `npm run dev`
 2. Odwiedź różne strony: `/`, `/generate`, `/flashcards`, `/study`
 3. ✅ Sprawdź czy Navigation jest widoczny na wszystkich stronach
@@ -648,6 +720,7 @@ curl http://localhost:4321/api/flashcards?limit=100 | jq
 10. ✅ Sprawdź disabled button "Logout" - czy jest nieaktywny?
 
 **Weryfikacja kompletności (wszystkie zadania z planu):**
+
 - [x] 1.3.1: GET /api/generations - lista generacji
 - [x] 1.3.2: GET /api/generations/[id] - szczegóły generacji
 - [x] 1.4.1: Widok /study - podstawowa sesja nauki
@@ -661,6 +734,7 @@ curl http://localhost:4321/api/flashcards?limit=100 | jq
 ## Notatki implementacyjne
 
 ### Aktualny postęp:
+
 - ✅ **Faza 1** - Backend lista generacji (4 kroki)
 - ✅ **Faza 2** - Backend szczegóły generacji (2 kroki + bug fix)
 - ✅ **Faza 3** - Sesja nauki - komponenty bazowe (3 kroki)
@@ -670,6 +744,7 @@ curl http://localhost:4321/api/flashcards?limit=100 | jq
 **🎉 WSZYSTKIE FAZY ZAKOŃCZONE!**
 
 ### Decyzje projektowe (Backend):
+
 1. ✅ Używamy DEFAULT_USER_ID (zgodnie z ETAP 1 MVP)
 2. ✅ Wzorzec podobny do FlashcardService
 3. ✅ Paginacja domyślna: page=1, limit=10
@@ -679,6 +754,7 @@ curl http://localhost:4321/api/flashcards?limit=100 | jq
 7. ✅ Bug fix: null → undefined dla domyślnych wartości query params
 
 ### Decyzje projektowe (Frontend - Study Session):
+
 8. ✅ Fisher-Yates shuffle algorithm dla losowania kart
 9. ✅ Limit 100 fiszek na sesję (bez paginacji)
 10. ✅ StudyCard: min-height 320px, max-width 2xl, responsive
@@ -691,6 +767,7 @@ curl http://localhost:4321/api/flashcards?limit=100 | jq
 17. ✅ Icon RotateCcw dla "Restart Session"
 
 ### Zmiany struktury plików (Faza 2):
+
 - **PRZED:** `src/pages/api/generations.ts`
 - **PO:** `src/pages/api/generations/index.ts` + `src/pages/api/generations/[id].ts`
 - **Powód:** Routing Astro dla dynamicznych parametrów
@@ -698,6 +775,7 @@ curl http://localhost:4321/api/flashcards?limit=100 | jq
 ---
 
 ### Decyzje projektowe (Frontend - Navigation):
+
 18. ✅ Navigation: responsive design (desktop horizontal + mobile hamburger)
 19. ✅ Sticky positioning: top-0, z-50 dla zawsze widocznej nawigacji
 20. ✅ Mobile hamburger: useState dla toggle, auto-close po kliknięciu linku
@@ -710,3 +788,117 @@ curl http://localhost:4321/api/flashcards?limit=100 | jq
 ---
 
 **Ostatnia aktualizacja:** 2026-01-28 (🎉 CHECKPOINT 1 KOMPLETNY - wszystkie 5 faz zakończone!)
+
+---
+
+## Review - Podsumowanie implementacji
+
+**Data zakończenia:** 2026-01-28  
+**Wersja:** 0.4.0  
+**Branch:** `feature/generations-study-session`  
+**Commit:** `3f2d5cd` - feat: add generations view, study session and navigation
+
+### Podsumowanie zmian
+
+Zaimplementowano kompleksową funkcjonalność obejmującą:
+
+1. **Widok historii generacji** (`/generations`)
+   - Lista wszystkich generacji użytkownika z paginacją
+   - Wyświetlanie statystyk generacji
+   - Pełna obsługa stanów: loading, error, empty
+
+2. **Widok szczegółów generacji** (`/generations/[id]`)
+   - Szczegóły pojedynczej generacji
+   - Lista wszystkich fiszek z danej generacji
+   - Integracja z widokiem edycji fiszek
+
+3. **Sesja nauki** (`/study`)
+   - Interaktywna sesja nauki z losowaniem fiszek
+   - Nawigacja między fiszkami
+   - Wizualizacja postępu
+
+4. **Komponent nawigacji**
+   - Responsive menu z hamburgerem
+   - Integracja we wszystkich widokach aplikacji
+
+### Statystyki
+
+- **Nowe pliki:** 23 pliki
+- **Zmodyfikowane pliki:** 7 plików
+- **Usunięte pliki:** 1 plik (refaktoryzacja API)
+- **Łącznie:** ~4,275 linii dodanych, 171 usuniętych
+
+### Komponenty i hooki
+
+**React Hooks:**
+
+- `useGenerations.ts` - zarządzanie listą generacji
+- `useGeneration.ts` - zarządzanie szczegółami generacji
+- `useStudySession.ts` - zarządzanie sesją nauki
+
+**React Components:**
+
+- `GenerationsView.tsx` - główny orchestrator widoku generacji
+- `GenerationsList.tsx` - lista generacji
+- `GenerationCard.tsx` - karta pojedynczej generacji
+- `GenerationDetailView.tsx` - widok szczegółów generacji
+- `StudySessionView.tsx` - główny orchestrator sesji nauki
+- `StudyCard.tsx` - karta fiszki w sesji nauki
+- `StudySessionProgress.tsx` - pasek postępu sesji
+- `Navigation.tsx` - komponent nawigacji
+
+**UI Components (shadcn/ui):**
+
+- `badge.tsx` - dla wyświetlania statusów
+- `card.tsx` - dla kart generacji i fiszek
+
+### Backend i API
+
+**API Endpoints:**
+
+- `GET /api/generations` - lista generacji z paginacją (refaktoryzacja)
+- `GET /api/generations/[id]` - szczegóły generacji + fiszki
+
+**Services:**
+
+- `GenerationService.getAll()` - pobieranie listy generacji
+- `GenerationService.getById()` - pobieranie szczegółów generacji
+
+**Schematy walidacji:**
+
+- `generations.schema.ts` - walidacja query params i ID
+
+### Typy TypeScript
+
+- `GenerationDto` - DTO dla pojedynczej generacji w liście
+- `GenerationDetailDto` - DTO dla szczegółów generacji z fiszkami
+- `GenerationsListResponseDto` - response z paginacją
+
+### Strony Astro
+
+- `generations.astro` - strona historii generacji
+- `generations/[id].astro` - strona szczegółów generacji
+- `study.astro` - strona sesji nauki
+
+### Wzorce i praktyki
+
+- **Error handling:** try/catch z re-throw dla wszystkich API calls
+- **Loading states:** skeleton loaders i spinners
+- **Toast notifications:** sonner dla wszystkich operacji
+- **Responsive design:** mobile-first approach
+- **Type safety:** pełna typizacja TypeScript z DTO
+- **Code organization:** zgodność z istniejącymi wzorcami projektu
+
+### Uwagi techniczne
+
+- Refaktoryzacja API: przeniesienie z `generations.ts` do `generations/` dla lepszej organizacji
+- Wszystkie komponenty zgodne z wzorcami z poprzednich implementacji
+- Zachowano spójność z istniejącym kodem (FlashcardsView jako wzorzec)
+- Pełna integracja z Layout.astro poprzez komponent Navigation
+
+### Następne kroki
+
+- Implementacja autentykacji (ETAP 3) - zastąpienie DEFAULT_USER_ID
+- Rozszerzenie sesji nauki o algorytm SM-2 (spaced repetition)
+- Dodanie możliwości usuwania generacji
+- Optymalizacja wydajności dla dużych list generacji
