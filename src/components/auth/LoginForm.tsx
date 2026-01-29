@@ -78,11 +78,11 @@ export default function LoginForm() {
         {isLoading ? "Logowanie..." : "Zaloguj się"}
       </Button>
 
-      <div className="text-center text-sm">
+      {/* <div className="text-center text-sm">
         <a href="#" className="text-muted-foreground hover:underline">
           Zapomniałeś hasła?
         </a>
-      </div>
+      </div> */}
 
       <div className="text-center text-sm">
         <span className="text-muted-foreground">Nie masz konta? </span>

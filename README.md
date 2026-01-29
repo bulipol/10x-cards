@@ -17,6 +17,7 @@
 ## Tech Stack
 
 **Frontend:**
+
 - Astro 5
 - React 19
 - TypeScript 5
@@ -24,16 +25,24 @@
 - Shadcn/ui
 
 **Backend:**
+
 - Supabase (PostgreSQL) for data storage and authentication
 - AI integration via OpenRouter.ai API
 
+**Testing:**
+
+- **Vitest** – unit tests (services, utilities, React components with React Testing Library)
+- **Playwright** – end-to-end (E2E) tests for critical user flows (auth, generation, flashcards, study)
+
 **CI/CD / Deployment:**
+
 - GitHub Actions for continuous integration and deployment
 - DigitalOcean for hosting using Docker images
 
 ## Getting Started Locally
 
 1. **Clone the repository:**
+
    ```sh
    git clone https://github.com/przeprogramowani/10x-cards.git
    cd 10x-cards
@@ -41,11 +50,13 @@
 
 2. **Ensure you are using the correct Node version:**
    This project uses the Node version specified in the `.nvmrc` file. Currently it's **22.14.0**.
+
    ```sh
    nvm use
    ```
 
 3. **Install dependencies:**
+
    ```sh
    npm install
    ```
@@ -65,6 +76,8 @@
 - **`npm run lint`**: Runs ESLint to check for linting issues.
 - **`npm run lint:fix`**: Automatically fixes linting issues.
 - **`npm run format`**: Formats the code using Prettier.
+- **`npm run test`**: Runs unit tests (Vitest).
+- **`npm run test:e2e`**: Runs E2E tests (Playwright).
 
 ## Project Scope
 
