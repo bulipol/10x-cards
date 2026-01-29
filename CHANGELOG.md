@@ -4,6 +4,31 @@ Wszystkie istotne zmiany w projekcie 10x-cards będą dokumentowane w tym pliku.
 
 Format oparty na [Keep a Changelog](https://keepachangelog.com/pl/1.1.0/).
 
+## [0.7.0] - 2026-01-29
+
+### Dodane
+
+- **Testy E2E – autentykacja**:
+  - `tests/e2e/auth.spec.ts` – 5 testów: przekierowanie z chronionej strony, ładowanie /login i /register, błąd logowania (komunikat + pozostanie na /login), sukces API (200) przy poprawnych credkach
+  - `tests/e2e/page-objects/LoginPage.ts` – Page Object: gotoLogin, fillEmail, fillPassword, submit, login, getErrorAlert; wypełnianie pól przez `pressSequentially()` (kompatybilność z React state)
+  - `playwright.config.ts` – webServer (npm run dev), `import "dotenv/config"` dla zmiennych E2E z .env
+  - `LoginForm.tsx` – atrybuty `data-testid`: login-email, login-password, login-submit, login-error
+  - `.env.example` – E2E_TEST_USER_EMAIL, E2E_TEST_USER_PASSWORD (zastąpienie E2E_USERNAME/E2E_PASSWORD)
+  - `.ai/implementation/test/e2e-start-auth-plan.md` – plan startu E2E od auth, instrukcja uruchamiania, review
+
+- **Testy jednostkowe (Vitest)**:
+  - `tests/unit/schemas/auth.schema.test.ts` – testy walidacji Zod: loginSchema, registerSchema (V-01, V-02)
+  - `tests/unit/schemas/flashcards.schema.test.ts` – testy schematów fiszek (query, create)
+  - `tests/unit/schemas/generations.schema.test.ts` – testy schematów generacji
+  - `tests/unit/services/flashcard.service.test.ts` – testy FlashcardService (z mockami Supabase)
+  - `.ai/implementation/test/start-testow-jednostkowych-plan.md` – plan startu testów jednostkowych od auth schemas
+
+### Zmienione
+
+- **package.json** – dodano `dotenv` (devDependencies) dla ładowania .env w testach E2E
+
+---
+
 ## [0.6.0] - 2026-01-29
 
 ### Dodane

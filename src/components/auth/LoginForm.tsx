@@ -44,7 +44,7 @@ export default function LoginForm() {
         <h2 className="text-2xl font-semibold">Zaloguj się</h2>
 
         {error && (
-          <Alert variant="destructive">
+          <Alert variant="destructive" data-testid="login-error">
             <AlertDescription>{error}</AlertDescription>
           </Alert>
         )}
@@ -58,6 +58,7 @@ export default function LoginForm() {
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             required
+            data-testid="login-email"
           />
         </div>
 
@@ -70,11 +71,12 @@ export default function LoginForm() {
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             required
+            data-testid="login-password"
           />
         </div>
       </div>
 
-      <Button type="submit" className="w-full" disabled={isLoading}>
+      <Button type="submit" className="w-full" disabled={isLoading} data-testid="login-submit">
         {isLoading ? "Logowanie..." : "Zaloguj się"}
       </Button>
 
