@@ -4,6 +4,39 @@ Wszystkie istotne zmiany w projekcie 10x-cards będą dokumentowane w tym pliku.
 
 Format oparty na [Keep a Changelog](https://keepachangelog.com/pl/1.1.0/).
 
+## [0.6.0] - 2026-01-29
+
+### Dodane
+
+- **Środowisko testów jednostkowych (Vitest)**:
+  - Vitest, React Testing Library, jsdom, @vitejs/plugin-react
+  - `vitest.config.ts` – testDir: `tests/unit/**`, jsdom, alias `@` → `src`
+  - `vitest.setup.ts` – import @testing-library/jest-dom
+  - Skrypty: `test`, `test:watch`, `test:ui`, `test:coverage`
+  - Przykładowy test: `tests/unit/example.test.ts`
+
+- **Środowisko testów E2E (Playwright)**:
+  - @playwright/test, konfiguracja tylko Chromium
+  - `playwright.config.ts` – testDir: `tests/e2e`, baseURL: localhost:3000
+  - `tests/e2e/page-objects/BasePage.ts` – klasa bazowa Page Object
+  - Skrypty: `test:e2e`, `test:e2e:ui`
+  - Przykładowy test: `tests/e2e/example.spec.ts`
+
+- **Dokumentacja**:
+  - Restrukturyzacja: plany, statusy i postępy przeniesione z ToDo/ do .ai/implementation/ (plan/, status/, progress/, auth/, endpoint/, view/)
+  - README.md – sekcja Testing (Vitest, Playwright), skrypty test/test:e2e
+  - .ai/coreDocumentation/tech-stack.md – sekcja Testowanie (Vitest, Playwright)
+  - .ai/implementation/test/srodowisko-testow-plan.md – plan wdrożenia środowiska testów
+  - .cursor/rules/playwright-e2e-testing.mdc – ścieżka Page Objects: `tests/e2e/page-objects`
+
+### Zmienione
+
+- **.gitignore** – dodano artefakty testów: `coverage/`, `test-results/`, `playwright-report/`, `blob-report/`
+
+- **LoginForm.tsx** – link „Zapomniałeś hasła?” tymczasowo ukryty (zakomentowany)
+
+---
+
 ## [0.5.0] - 2026-01-28
 
 ### Dodane
@@ -34,7 +67,7 @@ Format oparty na [Keep a Changelog](https://keepachangelog.com/pl/1.1.0/).
 - **Middleware autentykacji** (src/middleware/index.ts):
   - Auth check dla każdego requestu
   - Automatyczne przekierowanie do /login dla protected routes
-  - PUBLIC_PATHS: /login, /register, /api/auth/*
+  - PUBLIC_PATHS: /login, /register, /api/auth/\*
   - locals.user i locals.supabase dla wszystkich endpointów
 
 - **Walidacja Zod** (src/lib/schemas/):
