@@ -4,6 +4,14 @@ Wszystkie istotne zmiany w projekcie 10x-cards będą dokumentowane w tym pliku.
 
 Format oparty na [Keep a Changelog](https://keepachangelog.com/pl/1.1.0/).
 
+## [0.8.1] - 2026-01-30
+
+### Zmienione
+
+- **README.md** – uzupełnienie i uaktualnienie: sekcja Environment Variables (tabela zmiennych, krok cp .env.example), Project Structure, rozszerzone Available Scripts (test:watch, test:ui, test:coverage, test:e2e:ui), doprecyzowany CI/CD i Project Scope (Current MVP vs Planned), krok konfiguracji .env w Getting Started, informacja o SSR (Node adapter).
+
+---
+
 ## [0.8.0] - 2026-01-30
 
 ### Dodane
