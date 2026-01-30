@@ -4,6 +4,22 @@ Wszystkie istotne zmiany w projekcie 10x-cards będą dokumentowane w tym pliku.
 
 Format oparty na [Keep a Changelog](https://keepachangelog.com/pl/1.1.0/).
 
+## [0.8.0] - 2026-01-30
+
+### Dodane
+
+- **CI/CD (GitHub Actions)**:
+  - Workflow `.github/workflows/test.yml`: testy jednostkowe (Vitest), E2E (Playwright), build produkcyjny (Astro)
+  - Triggery: `workflow_dispatch` (ręczne uruchomienie), `push` i `pull_request` na gałąź `master`
+  - Job `build` z env z secrets: SUPABASE_URL, SUPABASE_KEY, OPENROUTER_API_KEY
+  - Plan i review w `tasks/cicd-minimal-setup.md`
+
+### Zmienione
+
+- **.github/workflows/test.yml** – ograniczenie triggerów do gałęzi `master` (usunięto `main`)
+
+---
+
 ## [0.7.0] - 2026-01-29
 
 ### Dodane
